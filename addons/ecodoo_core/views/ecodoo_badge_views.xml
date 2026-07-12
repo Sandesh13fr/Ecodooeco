@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Badge Views -->
+        <record id="view_ecodoo_badge_form" model="ir.ui.view">
+            <field name="name">ecodoo.badge.form</field>
+            <field name="model">ecodoo.badge</field>
+            <field name="arch" type="xml">
+                <form string="Badge">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="xp_threshold"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="company_id" options="{'no_create': True}"/>
+                            </group>
+                        </group>
+                        <group string="Description">
+                            <field name="description"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_badge_tree" model="ir.ui.view">
+            <field name="name">ecodoo.badge.tree</field>
+            <field name="model">ecodoo.badge</field>
+            <field name="arch" type="xml">
+                <tree string="Badges">
+                    <field name="name"/>
+                    <field name="xp_threshold"/>
+                    <field name="active"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_ecodoo_badge" model="ir.actions.act_window">
+            <field name="name">Badges</field>
+            <field name="res_model">ecodoo.badge</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Employee Badge Views -->
+        <record id="view_ecodoo_employee_badge_form" model="ir.ui.view">
+            <field name="name">ecodoo.employee.badge.form</field>
+            <field name="model">ecodoo.employee.badge</field>
+            <field name="arch" type="xml">
+                <form string="Employee Badge">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="employee_id" options="{'no_create': True}"/>
+                                <field name="badge_id" options="{'no_create': True}"/>
+                            </group>
+                            <group>
+                                <field name="awarded_at" readonly="1"/>
+                                <field name="source_participation_id" options="{'no_create': True}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_employee_badge_tree" model="ir.ui.view">
+            <field name="name">ecodoo.employee.badge.tree</field>
+            <field name="model">ecodoo.employee.badge</field>
+            <field name="arch" type="xml">
+                <tree string="Employee Badges">
+                    <field name="employee_id"/>
+                    <field name="badge_id"/>
+                    <field name="awarded_at"/>
+                    <field name="source_participation_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_employee_badge_search" model="ir.ui.view">
+            <field name="name">ecodoo.employee.badge.search</field>
+            <field name="model">ecodoo.employee.badge</field>
+            <field name="arch" type="xml">
+                <search string="Employee Badges">
+                    <field name="employee_id" string="Employee"/>
+                    <field name="badge_id" string="Badge"/>
+                    <filter name="my_badges" string="My Badges" domain="[('employee_id.user_id', '=', uid)]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_ecodoo_employee_badge" model="ir.actions.act_window">
+            <field name="name">Employee Badges</field>
+            <field name="res_model">ecodoo.employee.badge</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_ecodoo_employee_badge_search"/>
+        </record>
+
+        <!-- Employee Extension Views -->
+        <record id="view_hr_employee_form_inherit_ecodoo" model="ir.ui.view">
+            <field name="name">hr.employee.form.inherit.ecodoo</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="EcoDoo" name="ecodoo">
+                        <group>
+                            <field name="ecodoo_xp" widget="badge" string="EcoDoo XP" readonly="1"/>
+                        </group>
+                        <separator string="Badges Earned"/>
+                        <field name="ecodoo_employee_badge_ids" readonly="1">
+                            <tree string="Badges" editable="bottom">
+                                <field name="badge_id"/>
+                                <field name="awarded_at"/>
+                                <field name="source_participation_id"/>
+                            </tree>
+                        </field>
+                        <separator string="Participations"/>
+                        <field name="ecodoo_challenge_participation_ids" readonly="1">
+                            <tree string="Participations" editable="bottom">
+                                <field name="challenge_id"/>
+                                <field name="state"/>
+                                <field name="approved_at"/>
+                                <field name="xp_awarded"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Add x2many fields to hr.employee for the one2many relations -->
+        <record id="ecodoo_employee_badge_relation" model="ir.model.fields">
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="name">ecodoo_employee_badge_ids</field>
+            <field name="field_description">EcoDoo Badges</field>
+            <field name="ttype">one2many</field>
+            <field name="relation">ecodoo.employee.badge</field>
+            <field name="relation_field">employee_id</field>
+        </record>
+
+        <record id="ecodoo_challenge_participation_relation" model="ir.model.fields">
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="name">ecodoo_challenge_participation_ids</field>
+            <field name="field_description">EcoDoo Challenge Participations</field>
+            <field name="ttype">one2many</field>
+            <field name="relation">ecodoo.challenge.participation</field>
+            <field name="relation_field">employee_id</field>
+        </record>
+
+        <record id="ecodoo_policy_acknowledgement_relation" model="ir.model.fields">
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="name">ecodoo_policy_acknowledgement_ids</field>
+            <field name="field_description">EcoDoo Policy Acknowledgements</field>
+            <field name="ttype">one2many</field>
+            <field name="relation">ecodoo.policy.acknowledgement</field>
+            <field name="relation_field">employee_id</field>
+        </record>
+    </data>
+</odoo>

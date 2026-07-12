@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Carbon Transaction Views -->
+        <record id="view_ecodoo_carbon_transaction_form" model="ir.ui.view">
+            <field name="name">ecodoo.carbon.transaction.form</field>
+            <field name="model">ecodoo.carbon.transaction</field>
+            <field name="arch" type="xml">
+                <form string="Carbon Transaction">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,calculated,posted,cancelled"/>
+                        <button name="action_calculate" string="Calculate" type="object" class="btn-primary" invisible="state not in ('draft', 'calculated')" groups="ecodoo_core.group_ecodoo_manager"/>
+                        <button name="action_post" string="Post" type="object" class="btn-primary" invisible="state != 'calculated'" groups="ecodoo_core.group_ecodoo_manager"/>
+                        <button name="action_cancel" string="Cancel" type="object" class="btn-secondary" invisible="state not in ('draft', 'calculated')" groups="ecodoo_core.group_ecodoo_manager"/>
+                        <button name="action_reset_to_draft" string="Reset to Draft" type="object" class="btn-secondary" invisible="state != 'calculated'" groups="ecodoo_core.group_ecodoo_manager"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_calculate" string="Calculate" type="object" class="oe_stat_button" icon="fa-calculator" invisible="state not in ('draft', 'calculated')" groups="ecodoo_core.group_ecodoo_manager"/>
+                            <button name="action_post" string="Post" type="object" class="oe_stat_button" icon="fa-check" invisible="state != 'calculated'" groups="ecodoo_core.group_ecodoo_manager"/>
+                            <button name="action_cancel" string="Cancel" type="object" class="oe_stat_button" icon="fa-ban" invisible="state not in ('draft', 'calculated')" groups="ecodoo_core.group_ecodoo_manager"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="activity_date"/>
+                                <field name="department_id" options="{'no_create': True}"/>
+                                <field name="activity_type"/>
+                            </group>
+                            <group>
+                                <field name="quantity"/>
+                                <field name="uom_id"/>
+                                <field name="factor_id" options="{'no_create': True}"/>
+                                <field name="company_id" options="{'no_create': True}"/>
+                            </group>
+                        </group>
+                        <group string="Calculation Results">
+                            <field name="kg_co2e" readonly="1"/>
+                            <field name="calculated_at" readonly="1"/>
+                            <field name="posted_at" readonly="1"/>
+                        </group>
+                        <group string="Calculation Trace" colspan="2">
+                            <field name="calculation_trace" readonly="1" widget="text" nolabel="1"/>
+                        </group>
+                        <group string="Source">
+                            <field name="source_reference"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_carbon_transaction_tree" model="ir.ui.view">
+            <field name="name">ecodoo.carbon.transaction.tree</field>
+            <field name="model">ecodoo.carbon.transaction</field>
+            <field name="arch" type="xml">
+                <tree string="Carbon Transactions" decoration-info="state == 'draft'" decoration-warning="state == 'calculated'" decoration-success="state == 'posted'" decoration-muted="state == 'cancelled'">
+                    <field name="name"/>
+                    <field name="activity_date"/>
+                    <field name="department_id"/>
+                    <field name="activity_type"/>
+                    <field name="quantity"/>
+                    <field name="uom_id"/>
+                    <field name="factor_id"/>
+                    <field name="kg_co2e" sum="Total CO2e"/>
+                    <field name="state"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_carbon_transaction_search" model="ir.ui.view">
+            <field name="name">ecodoo.carbon.transaction.search</field>
+            <field name="model">ecodoo.carbon.transaction</field>
+            <field name="arch" type="xml">
+                <search string="Carbon Transactions">
+                    <field name="name" string="Reference"/>
+                    <field name="department_id" string="Department"/>
+                    <field name="factor_id" string="Factor"/>
+                    <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                    <filter name="calculated" string="Calculated" domain="[('state', '=', 'calculated')]"/>
+                    <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                    <filter name="cancelled" string="Cancelled" domain="[('state', '=', 'cancelled')]"/>
+                    <group string="Group By">
+                        <filter name="by_department" string="Department" domain="[]" context="{'group_by': 'department_id'}"/>
+                        <filter name="by_activity_type" string="Activity Type" domain="[]" context="{'group_by': 'activity_type'}"/>
+                        <filter name="by_state" string="State" domain="[]" context="{'group_by': 'state'}"/>
+                        <filter name="by_company" string="Company" domain="[]" context="{'group_by': 'company_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_carbon_transaction_graph" model="ir.ui.view">
+            <field name="name">ecodoo.carbon.transaction.graph</field>
+            <field name="model">ecodoo.carbon.transaction</field>
+            <field name="arch" type="xml">
+                <graph string="CO2e by Department" type="bar">
+                    <field name="department_id" interval="week" type="row"/>
+                    <field name="kg_co2e" type="measure" operator="+"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_carbon_transaction_pivot" model="ir.ui.view">
+            <field name="name">ecodoo.carbon.transaction.pivot</field>
+            <field name="model">ecodoo.carbon.transaction</field>
+            <field name="arch" type="xml">
+                <pivot string="CO2e Analysis">
+                    <field name="department_id" type="row"/>
+                    <field name="activity_type" type="col"/>
+                    <field name="kg_co2e" type="measure"/>
+                    <field name="activity_date" interval="month" type="row"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="action_ecodoo_carbon_transaction" model="ir.actions.act_window">
+            <field name="name">Carbon Transactions</field>
+            <field name="res_model">ecodoo.carbon.transaction</field>
+            <field name="view_mode">tree,form,graph,pivot</field>
+            <field name="search_view_id" ref="view_ecodoo_carbon_transaction_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Create your first carbon transaction</p>
+                <p>Record operational activities and calculate emissions using approved factors.</p>
+            </field>
+        </record>
+    </data>
+</odoo>

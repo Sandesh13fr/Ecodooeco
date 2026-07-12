@@ -1,0 +1,40 @@
+{
+    'name': 'Ecodoo Core',
+    'version': '19.0.1.0.0',
+    'summary': 'ESG Management Core: Carbon transactions, goals, policies, compliance, challenges, and gamification',
+    'description': """Core ESG management module for Ecodoo.
+    
+Features:
+- Carbon emission factors and transactions with immutable calculation trace
+- Department-level emission goals with progress tracking
+- Policy management with acknowledgements
+- Compliance issue tracking
+- Employee challenges, badges, and gamification (XP, badges)
+- Employee XP extension
+- Dashboard API with E/S/G scores
+- Multi-company record rules and security groups
+""",
+    'category': 'ESG/Sustainability',
+    'version': '19.0.1.0.0',
+    'depends': ['base', 'mail', 'hr', 'uom'],
+    'author': 'Ecodoo',
+    'license': 'LGPL-3',
+    'data': [
+        'security/ir.model.access.csv',
+        'security/ecodoo_security.xml',
+        'data/ecodoo_demo.xml',
+        'views/ecodoo_emission_factor_views.xml',
+        'views/ecodoo_carbon_transaction_views.xml',
+        'views/ecodoo_goal_views.xml',
+        'views/ecodoo_policy_views.xml',
+        'views/ecodoo_challenge_views.xml',
+        'views/ecodoo_badge_views.xml',
+        'views/ecodoo_dashboard_views.xml',
+    ],
+    'demo': [
+        'data/ecodoo_demo.xml',
+    ],
+    'installable': True,
+    'auto_install': False,
+    'application': True,
+}

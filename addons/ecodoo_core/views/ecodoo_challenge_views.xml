@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Challenge Views -->
+        <record id="view_ecodoo_challenge_form" model="ir.ui.view">
+            <field name="name">ecodoo.challenge.form</field>
+            <field name="model">ecodoo.challenge</field>
+            <field name="arch" type="xml">
+                <form string="Challenge">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,active,closed"/>
+                        <button name="action_activate" string="Activate" type="object" class="btn-primary" invisible="state != 'draft'" groups="ecodoo_core.group_ecodoo_manager"/>
+                        <button name="action_close" string="Close" type="object" class="btn-secondary" invisible="state != 'active'" groups="ecodoo_core.group_ecodoo_manager"/>
+                        <button name="action_reset_to_draft" string="Reset to Draft" type="object" class="btn-secondary" invisible="state != 'draft'" groups="ecodoo_core.group_ecodoo_manager"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                                <field name="xp_reward"/>
+                                <field name="badge_id" options="{'no_create': True}"/>
+                            </group>
+                            <group>
+                                <field name="state"/>
+                                <field name="company_id" options="{'no_create': True}"/>
+                            </group>
+                        </group>
+                        <group string="Description">
+                            <field name="description"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_challenge_tree" model="ir.ui.view">
+            <field name="name">ecodoo.challenge.tree</field>
+            <field name="model">ecodoo.challenge</field>
+            <field name="arch" type="xml">
+                <tree string="Challenges">
+                    <field name="name"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="xp_reward"/>
+                    <field name="badge_id"/>
+                    <field name="state"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_challenge_search" model="ir.ui.view">
+            <field name="name">ecodoo.challenge.search</field>
+            <field name="model">ecodoo.challenge</field>
+            <field name="arch" type="xml">
+                <search string="Challenges">
+                    <field name="name" string="Name"/>
+                    <filter name="active" string="Active" domain="[('state', '=', 'active')]"/>
+                    <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                    <filter name="closed" string="Closed" domain="[('state', '=', 'closed')]"/>
+                    <group string="Group By">
+                        <filter name="by_state" string="State" domain="[]" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_ecodoo_challenge" model="ir.actions.act_window">
+            <field name="name">Challenges</field>
+            <field name="res_model">ecodoo.challenge</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_ecodoo_challenge_search"/>
+        </record>
+
+        <!-- Challenge Participation Views -->
+        <record id="view_ecodoo_challenge_participation_form" model="ir.ui.view">
+            <field name="name">ecodoo.challenge.participation.form</field>
+            <field name="model">ecodoo.challenge.participation</field>
+            <field name="arch" type="xml">
+                <form string="Challenge Participation">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="joined,submitted,approved,rejected"/>
+                        <button name="action_submit" string="Submit Proof" type="object" class="btn-primary" invisible="state != 'joined'"/>
+                        <button name="action_approve" string="Approve" type="object" class="btn-primary" invisible="state != 'submitted'" groups="ecodoo_core.group_ecodoo_manager"/>
+                        <button name="action_reject" string="Reject" type="object" class="btn-secondary" invisible="state != 'submitted'" groups="ecodoo_core.group_ecodoo_manager"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="challenge_id" options="{'no_create': True}"/>
+                                <field name="employee_id" options="{'no_create': True}"/>
+                                <field name="state"/>
+                            </group>
+                            <group>
+                                <field name="approved_by" readonly="1" options="{'no_create': True}"/>
+                                <field name="approved_at" readonly="1"/>
+                                <field name="xp_awarded" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Proof / Note">
+                            <field name="proof_note" placeholder="Provide proof of completion..."/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_challenge_participation_tree" model="ir.ui.view">
+            <field name="name">ecodoo.challenge.participation.tree</field>
+            <field name="model">ecodoo.challenge.participation</field>
+            <field name="arch" type="xml">
+                <tree string="Challenge Participations">
+                    <field name="challenge_id"/>
+                    <field name="employee_id"/>
+                    <field name="state"/>
+                    <field name="approved_by"/>
+                    <field name="approved_at"/>
+                    <field name="xp_awarded"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_challenge_participation_search" model="ir.ui.view">
+            <field name="name">ecodoo.challenge.participation.search</field>
+            <field name="model">ecodoo.challenge.participation</field>
+            <field name="arch" type="xml">
+                <search string="Challenge Participations">
+                    <field name="challenge_id" string="Challenge"/>
+                    <field name="employee_id" string="Employee"/>
+                    <filter name="joined" string="Joined" domain="[('state', '=', 'joined')]"/>
+                    <filter name="submitted" string="Submitted" domain="[('state', '=', 'submitted')]"/>
+                    <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                    <filter name="rejected" string="Rejected" domain="[('state', '=', 'rejected')]"/>
+                    <filter name="my_participations" string="My Participations" domain="[('employee_id.user_id', '=', uid)]"/>
+                    <group string="Group By">
+                        <filter name="by_challenge" string="Challenge" domain="[]" context="{'group_by': 'challenge_id'}"/>
+                        <filter name="by_state" string="State" domain="[]" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_ecodoo_challenge_participation" model="ir.actions.act_window">
+            <field name="name">Challenge Participations</field>
+            <field name="res_model">ecodoo.challenge.participation</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_ecodoo_challenge_participation_search"/>
+        </record>
+    </data>
+</odoo>

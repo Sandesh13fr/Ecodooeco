@@ -1,0 +1,207 @@
+# -*- coding: utf-8 -*-
+"""Carbon Transaction Model"""
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError, UserError
+from odoo.tools import float_round
+from datetime import datetime
+
+
+class EcodooCarbonTransaction(models.Model):
+    """Carbon Transaction with immutable posted state and calculation trace"""
+    _name = 'ecodoo.carbon.transaction'
+    _description = 'Carbon Transaction'
+    _order = 'activity_date desc, id desc'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _check_company_auto = True
+
+    name = fields.Char(required=True, tracking=True, copy=False, default='New')
+    activity_date = fields.Date(
+        required=True,
+        default=fields.Date.context_today,
+        tracking=True,
+    )
+    department_id = fields.Many2one(
+        'hr.department',
+        string='Department',
+        required=True,
+        tracking=True,
+        check_company=True,
+    )
+    activity_type = fields.Selection(
+        selection=[
+            ('fuel', 'Fuel'),
+            ('electricity', 'Electricity'),
+            ('travel', 'Travel'),
+            ('waste', 'Waste'),
+        ],
+        required=True,
+        tracking=True,
+    )
+    quantity = fields.Float(
+        required=True,
+        tracking=True,
+        digits=(16, 3),
+        help='Quantity in the source unit of measure',
+    )
+    uom_id = fields.Many2one(
+        'uom.uom',
+        string='Unit of Measure',
+        required=True,
+        tracking=True,
+    )
+    factor_id = fields.Many2one(
+        'ecodoo.emission.factor',
+        string='Emission Factor',
+        required=True,
+        tracking=True,
+        domain="[('state', '=', 'approved'), ('company_id', '=', company_id), ('activity_type', '=', activity_type)]",
+        check_company=True,
+    )
+    kg_co2e = fields.Float(
+        string='kg CO2e',
+        compute='_compute_kg_co2e',
+        store=True,
+        readonly=True,
+        digits=(16, 3),
+        tracking=True,
+    )
+    calculation_trace = fields.Text(
+        string='Calculation Trace',
+        compute='_compute_calculation_trace',
+        store=True,
+        readonly=True,
+    )
+    source_reference = fields.Char(string='Source Reference')
+    state = fields.Selection(
+        selection=[
+            ('draft', 'Draft'),
+            ('calculated', 'Calculated'),
+            ('posted', 'Posted'),
+            ('cancelled', 'Cancelled'),
+        ],
+        default='draft',
+        required=True,
+        tracking=True,
+        copy=False,
+    )
+    calculated_at = fields.Datetime(readonly=True, copy=False)
+    posted_at = fields.Datetime(readonly=True, copy=False)
+    company_id = fields.Many2one(
+        'res.company',
+        required=True,
+        default=lambda self: self.env.company,
+    )
+
+    @api.depends('quantity', 'uom_id', 'factor_id', 'factor_id.kg_co2e_per_unit', 'factor_id.input_uom_id')
+    def _compute_kg_co2e(self):
+        for record in self:
+            if record.quantity and record.uom_id and record.factor_id:
+                factor_uom = record.factor_id.input_uom_id
+                if record.uom_id == factor_uom:
+                    normalized_qty = record.quantity
+                    conversion_note = 'No conversion needed'
+                else:
+                    normalized_qty = record.uom_id._compute_quantity(record.quantity, factor_uom)
+                    conversion_note = f'{record.quantity:.6f} {record.uom_id.name} = {normalized_qty:.6f} {factor_uom.name}'
+                kg_co2e = float_round(normalized_qty * record.factor_id.kg_co2e_per_unit, precision_digits=3)
+                record.kg_co2e = kg_co2e
+            else:
+                record.kg_co2e = 0.0
+
+    @api.depends('quantity', 'uom_id', 'factor_id', 'kg_co2e')
+    def _compute_calculation_trace(self):
+        for record in self:
+            if record.quantity and record.uom_id and record.factor_id:
+                factor = record.factor_id
+                factor_uom = factor.input_uom_id
+                if record.uom_id == factor_uom:
+                    normalized_qty = record.quantity
+                    conversion_note = f'No conversion needed ({record.uom_id.name} = {factor_uom.name})'
+                else:
+                    normalized_qty = record.uom_id._compute_quantity(record.quantity, factor_uom)
+                    conversion_note = f'{record.quantity:.6f} {record.uom_id.name} = {normalized_qty:.6f} {factor_uom.name} (UoM conversion)'
+                trace_lines = [
+                    f'Source: {record.quantity:.6f} {record.uom_id.name}',
+                    f'Conversion: {conversion_note}',
+                    f'Factor: {factor.code} v{factor.version} ({factor.kg_co2e_per_unit:.6f} kg CO2e/{factor_uom.name})',
+                    f'Calculation: {normalized_qty:.6f} x {factor.kg_co2e_per_unit:.6f} = {record.kg_co2e:.3f} kg CO2e',
+                    f'Calculated at: {fields.Datetime.now()}',
+                ]
+                record.calculation_trace = '\n'.join(trace_lines)
+            else:
+                record.calculation_trace = 'Incomplete data for calculation'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('ecodoo.carbon.transaction') or 'New'
+        return super().create(vals_list)
+
+    def action_calculate(self):
+        """Calculate emissions from draft or calculated state"""
+        for record in self:
+            if record.state not in ('draft', 'calculated'):
+                raise UserError(_('Can only calculate from Draft or Calculated state.'))
+            if not record.factor_id:
+                raise UserError(_('Emission factor is required.'))
+            if not record.quantity or record.quantity <= 0:
+                raise UserError(_('Quantity must be positive.'))
+            if not record.uom_id:
+                raise UserError(_('Unit of measure is required.'))
+            # Force computation
+            record._compute_kg_co2e()
+            record._compute_calculation_trace()
+            record.state = 'calculated'
+            record.calculated_at = fields.Datetime.now()
+
+    def action_post(self):
+        """Post calculated transaction - makes it immutable"""
+        for record in self:
+            if record.state != 'calculated':
+                raise UserError(_('Can only post from Calculated state.'))
+            # Freeze factor snapshot by ensuring factor is approved and valid
+            factor = record.factor_id
+            if factor.state != 'approved':
+                raise UserError(_('Cannot post with unapproved factor.'))
+            if factor.valid_from and factor.valid_from > record.activity_date:
+                raise UserError(_('Factor is not valid for the activity date (valid from %s).', factor.valid_from))
+            if factor.valid_to and factor.valid_to < record.activity_date:
+                raise UserError(_('Factor is expired for the activity date (valid to %s).', factor.valid_to))
+            record.state = 'posted'
+            record.posted_at = fields.Datetime.now()
+
+    def action_cancel(self):
+        """Cancel from draft or calculated state"""
+        for record in self:
+            if record.state not in ('draft', 'calculated'):
+                raise UserError(_('Can only cancel from Draft or Calculated state.'))
+            record.state = 'cancelled'
+
+    def action_reset_to_draft(self):
+        """Reset to draft from calculated (not posted)"""
+        for record in self:
+            if record.state != 'calculated':
+                raise UserError(_('Can only reset to draft from Calculated state.'))
+            record.state = 'draft'
+            record.calculated_at = False
+
+    @api.constrains('state', 'factor_id', 'quantity', 'uom_id', 'activity_date', 'department_id', 'kg_co2e', 'calculation_trace')
+    def _check_posted_immutable(self):
+        for record in self:
+            if record.state == 'posted' and record._origin.state == 'posted':
+                changed_fields = []
+                for field_name in ['factor_id', 'quantity', 'uom_id', 'activity_date', 'department_id', 'kg_co2e', 'calculation_trace', 'source_reference']:
+                    if record[field_name] != record._origin[field_name]:
+                        changed_fields.append(field_name)
+                if changed_fields:
+                    raise ValidationError(_(
+                        'Posted transactions are immutable. Cannot change: %s',
+                        ', '.join(changed_fields)
+                    ))
+
+    @api.constrains('quantity')
+    def _check_quantity_positive(self):
+        for record in self:
+            if record.quantity <= 0:
+                raise ValidationError(_('Quantity must be positive.'))

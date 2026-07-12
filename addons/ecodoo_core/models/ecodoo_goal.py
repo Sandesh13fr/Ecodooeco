@@ -1,0 +1,130 @@
+from odoo import api, fields, models, _
+
+
+class EcodooGoal(models.Model):
+    _name = 'ecodoo.goal'
+    _description = 'Emission Reduction Goal'
+    _order = 'period_start desc'
+    _rec_name = 'display_name'
+
+    name = fields.Char(required=True)
+    department_id = fields.Many2one(
+        'hr.department',
+        required=True,
+        check_company=True,
+    )
+    period_start = fields.Date(required=True)
+    period_end = fields.Date(required=True)
+    target_kg_co2e = fields.Float(
+        string='Target (kg CO2e)',
+        required=True,
+        digits=(16, 3),
+    )
+    actual_kg_co2e = fields.Float(
+        string='Actual (kg CO2e)',
+        compute='_compute_actual_kg_co2e',
+        store=True,
+        digits=(16, 3),
+    )
+    progress_percent = fields.Float(
+        string='Progress (%)',
+        compute='_compute_progress_percent',
+        store=True,
+        digits=(10, 2),
+    )
+    status = fields.Selection(
+        selection=[
+            ('on_track', 'On Track'),
+            ('at_risk', 'At Risk'),
+            ('off_track', 'Off Track'),
+        ],
+        compute='_compute_status',
+        store=True,
+    )
+    state = fields.Selection(
+        selection=[
+            ('draft', 'Draft'),
+            ('active', 'Active'),
+            ('closed', 'Closed'),
+        ],
+        default='draft',
+        required=True,
+    )
+    company_id = fields.Many2one(
+        'res.company',
+        required=True,
+        default=lambda self: self.env.company,
+    )
+    display_name = fields.Char(compute='_compute_display_name', store=True)
+
+    _sql_constraints = [
+        ('period_dates_order',
+         'CHECK(period_start <= period_end)',
+         'Period start must be before or equal to period end.'),
+        ('target_positive',
+         'CHECK(target_kg_co2e > 0)',
+         'Target must be positive.'),
+    ]
+
+    @api.depends('name', 'department_id')
+    def _compute_display_name(self):
+        for record in self:
+            record.display_name = f'{record.name} ({record.department_id.name})'
+
+    @api.depends('period_start', 'period_end', 'department_id', 'company_id')
+    def _compute_actual_kg_co2e(self):
+        for record in self:
+            if record.period_start and record.period_end and record.department_id:
+                domain = [
+                    ('state', '=', 'posted'),
+                    ('department_id', '=', record.department_id.id),
+                    ('company_id', '=', record.company_id.id),
+                    ('activity_date', '>=', record.period_start),
+                    ('activity_date', '<=', record.period_end),
+                ]
+                transactions = self.env['ecodoo.carbon.transaction'].search(domain)
+                record.actual_kg_co2e = sum(transactions.mapped('kg_co2e'))
+            else:
+                record.actual_kg_co2e = 0.0
+
+    @api.depends('actual_kg_co2e', 'target_kg_co2e')
+    def _compute_progress_percent(self):
+        for record in self:
+            if record.target_kg_co2e > 0:
+                record.progress_percent = (record.actual_kg_co2e / record.target_kg_co2e) * 100
+            else:
+                record.progress_percent = 0.0
+
+    @api.depends('progress_percent')
+    def _compute_status(self):
+        for record in self:
+            if record.progress_percent <= 100:
+                record.status = 'on_track'
+            elif record.progress_percent <= 115:
+                record.status = 'at_risk'
+            else:
+                record.status = 'off_track'
+
+    def action_activate(self):
+        for record in self:
+            if record.state != 'draft':
+                raise UserError(_('Can only activate from Draft state.'))
+            record.state = 'active'
+
+    def action_close(self):
+        for record in self:
+            if record.state != 'active':
+                raise UserError(_('Can only close from Active state.'))
+            record.state = 'closed'
+
+    def action_reset_to_draft(self):
+        for record in self:
+            if record.state != 'draft':
+                raise UserError(_('Can only reset from Draft state.'))
+            record.state = 'draft'
+
+    def recompute_actuals(self):
+        """Recompute actuals for all goals"""
+        self._compute_actual_kg_co2e()
+        self._compute_progress_percent()
+        self._compute_status()
