@@ -1,6 +1,11 @@
 # ecodoo-ui
 
-This template should help get you started developing with Vue 3 in Vite.
+- **Audience:** Ecodoo frontend contributors and reviewers.
+- **Purpose:** Vue 3/Vite presentation shell for the Ecodoo marketing site and route-driven product demo.
+- **Prerequisites:** Node.js 22.18+ or 24.12+ and npm.
+- **Last verified:** Ecodoo UI 0.0.0 on 2026-07-12.
+
+Root `DESIGN.md` is the single source of truth for UI decisions. Brand graphics live in `public/graphics`. Reusable interface icons are local SVG paths rendered by `src/components/ui/IconGlyph.vue`; no external icon runtime is required.
 
 ## Recommended IDE Setup
 
