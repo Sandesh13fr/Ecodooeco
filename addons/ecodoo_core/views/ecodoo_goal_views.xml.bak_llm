@@ -48,7 +48,7 @@
             <field name="name">ecodoo.goal.tree</field>
             <field name="model">ecodoo.goal</field>
             <field name="arch" type="xml">
-                <list string="Emission Goals" decoration-success="status == 'on_track'" decoration-warning="status == 'at_risk'" decoration-danger="status == 'off_track'">
+                <tree string="Emission Goals" decoration-success="status == 'on_track'" decoration-warning="status == 'at_risk'" decoration-danger="status == 'off_track'">
                     <field name="name"/>
                     <field name="department_id"/>
                     <field name="period_start"/>
@@ -59,7 +59,7 @@
                     <field name="status"/>
                     <field name="state"/>
                     <field name="company_id"/>
-                </list>
+                </tree>
             </field>
         </record>
 
@@ -76,7 +76,7 @@
                     <filter name="on_track" string="On Track" domain="[('status', '=', 'on_track')]"/>
                     <filter name="at_risk" string="At Risk" domain="[('status', '=', 'at_risk')]"/>
                     <filter name="off_track" string="Off Track" domain="[('status', '=', 'off_track')]"/>
-                    <group>
+                    <group string="Group By">
                         <filter name="by_department" string="Department" domain="[]" context="{'group_by': 'department_id'}"/>
                         <filter name="by_state" string="State" domain="[]" context="{'group_by': 'state'}"/>
                         <filter name="by_status" string="Status" domain="[]" context="{'group_by': 'status'}"/>
@@ -88,7 +88,7 @@
         <record id="action_ecodoo_goal" model="ir.actions.act_window">
             <field name="name">Emission Goals</field>
             <field name="res_model">ecodoo.goal</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="view_ecodoo_goal_search"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">Create your first emission reduction goal</p>

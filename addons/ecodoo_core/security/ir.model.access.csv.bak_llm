@@ -38,4 +38,3 @@ access_ecodoo_badge_executive,ecodoo.badge executive,model_ecodoo_badge,group_ec
 access_ecodoo_employee_badge_user,ecodoo.employee.badge user,model_ecodoo_employee_badge,group_ecodoo_employee,1,0,0,0
 access_ecodoo_employee_badge_manager,ecodoo.employee.badge manager,model_ecodoo_employee_badge,group_ecodoo_manager,1,1,1,1
 access_ecodoo_employee_badge_executive,ecodoo.employee.badge executive,model_ecodoo_employee_badge,group_ecodoo_executive,1,0,0,0
-access_ecodoo_dashboard_employee,ecodoo.dashboard employee,model_ecodoo_dashboard,group_ecodoo_employee,1,0,0,0

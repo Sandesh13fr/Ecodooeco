@@ -4,7 +4,6 @@ from odoo.exceptions import ValidationError, UserError
 
 class EcodooChallenge(models.Model):
     _name = 'ecodoo.challenge'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Employee Challenge'
     _order = 'start_date desc'
     _rec_name = 'name'
@@ -65,7 +64,6 @@ class EcodooChallenge(models.Model):
 
 class EcodooChallengeParticipation(models.Model):
     _name = 'ecodoo.challenge.participation'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Challenge Participation'
     _rec_name = 'display_name'
 
@@ -119,8 +117,6 @@ class EcodooChallengeParticipation(models.Model):
 
     def action_approve(self):
         for record in self:
-            if record.state == 'approved' and record.xp_awarded:
-                continue
             if record.state != 'submitted':
                 raise UserError(_('Can only approve from Submitted state.'))
             if record.xp_awarded:

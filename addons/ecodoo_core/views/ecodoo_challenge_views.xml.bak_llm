@@ -44,7 +44,7 @@
             <field name="name">ecodoo.challenge.tree</field>
             <field name="model">ecodoo.challenge</field>
             <field name="arch" type="xml">
-                <list string="Challenges">
+                <tree string="Challenges">
                     <field name="name"/>
                     <field name="start_date"/>
                     <field name="end_date"/>
@@ -52,7 +52,7 @@
                     <field name="badge_id"/>
                     <field name="state"/>
                     <field name="company_id"/>
-                </list>
+                </tree>
             </field>
         </record>
 
@@ -65,7 +65,7 @@
                     <filter name="active" string="Active" domain="[('state', '=', 'active')]"/>
                     <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
                     <filter name="closed" string="Closed" domain="[('state', '=', 'closed')]"/>
-                    <group>
+                    <group string="Group By">
                         <filter name="by_state" string="State" domain="[]" context="{'group_by': 'state'}"/>
                     </group>
                 </search>
@@ -75,7 +75,7 @@
         <record id="action_ecodoo_challenge" model="ir.actions.act_window">
             <field name="name">Challenges</field>
             <field name="res_model">ecodoo.challenge</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="view_ecodoo_challenge_search"/>
         </record>
 
@@ -121,14 +121,14 @@
             <field name="name">ecodoo.challenge.participation.tree</field>
             <field name="model">ecodoo.challenge.participation</field>
             <field name="arch" type="xml">
-                <list string="Challenge Participations">
+                <tree string="Challenge Participations">
                     <field name="challenge_id"/>
                     <field name="employee_id"/>
                     <field name="state"/>
                     <field name="approved_by"/>
                     <field name="approved_at"/>
                     <field name="xp_awarded"/>
-                </list>
+                </tree>
             </field>
         </record>
 
@@ -144,7 +144,7 @@
                     <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
                     <filter name="rejected" string="Rejected" domain="[('state', '=', 'rejected')]"/>
                     <filter name="my_participations" string="My Participations" domain="[('employee_id.user_id', '=', uid)]"/>
-                    <group>
+                    <group string="Group By">
                         <filter name="by_challenge" string="Challenge" domain="[]" context="{'group_by': 'challenge_id'}"/>
                         <filter name="by_state" string="State" domain="[]" context="{'group_by': 'state'}"/>
                     </group>
@@ -155,7 +155,7 @@
         <record id="action_ecodoo_challenge_participation" model="ir.actions.act_window">
             <field name="name">Challenge Participations</field>
             <field name="res_model">ecodoo.challenge.participation</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="view_ecodoo_challenge_participation_search"/>
         </record>
     </data>

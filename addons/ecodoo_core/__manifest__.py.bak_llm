@@ -19,15 +19,18 @@ Features:
     'author': 'Ecodoo',
     'license': 'LGPL-3',
     'data': [
-        'security/ecodoo_security.xml',
-        'security/ir.model.access.csv',
-        'views/ecodoo_emission_factor_views.xml',
-        'views/ecodoo_carbon_transaction_views.xml',
-        'views/ecodoo_goal_views.xml',
-        'views/ecodoo_policy_views.xml',
-        'views/ecodoo_challenge_views.xml',
-        'views/ecodoo_badge_views.xml',
-        'views/ecodoo_dashboard_views.xml',
+    'security/ecodoo_security.xml',
+    'security/ir.model.access.csv',
+
+    'data/ecodoo_demo.xml',
+
+    'views/ecodoo_emission_factor_views.xml',
+    'views/ecodoo_carbon_transaction_views.xml',
+    'views/ecodoo_goal_views.xml',
+    'views/ecodoo_policy_views.xml',
+    'views/ecodoo_challenge_views.xml',
+    'views/ecodoo_badge_views.xml',
+    'views/ecodoo_dashboard_views.xml',
     ],
     'demo': [
         'data/ecodoo_demo.xml',

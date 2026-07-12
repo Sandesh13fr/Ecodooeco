@@ -92,10 +92,10 @@ class EcodooCarbonTransaction(models.Model):
         default=lambda self: self.env.company,
     )
 
-    @api.depends('state', 'quantity', 'uom_id', 'factor_id', 'factor_id.kg_co2e_per_unit', 'factor_id.input_uom_id')
+    @api.depends('quantity', 'uom_id', 'factor_id', 'factor_id.kg_co2e_per_unit', 'factor_id.input_uom_id')
     def _compute_kg_co2e(self):
         for record in self:
-            if record.state in ('calculated', 'posted') and record.quantity and record.uom_id and record.factor_id:
+            if record.quantity and record.uom_id and record.factor_id:
                 factor_uom = record.factor_id.input_uom_id
                 if record.uom_id == factor_uom:
                     normalized_qty = record.quantity
@@ -108,10 +108,10 @@ class EcodooCarbonTransaction(models.Model):
             else:
                 record.kg_co2e = 0.0
 
-    @api.depends('state', 'quantity', 'uom_id', 'factor_id', 'kg_co2e')
+    @api.depends('quantity', 'uom_id', 'factor_id', 'kg_co2e')
     def _compute_calculation_trace(self):
         for record in self:
-            if record.state in ('calculated', 'posted') and record.quantity and record.uom_id and record.factor_id:
+            if record.quantity and record.uom_id and record.factor_id:
                 factor = record.factor_id
                 factor_uom = factor.input_uom_id
                 if record.uom_id == factor_uom:
@@ -194,18 +194,19 @@ class EcodooCarbonTransaction(models.Model):
             record.state = 'draft'
             record.calculated_at = False
 
-    def write(self, vals):
-        immutable_fields = {
-            'factor_id', 'quantity', 'uom_id', 'activity_date', 'department_id',
-            'kg_co2e', 'calculation_trace', 'source_reference',
-        }
-        changed_fields = immutable_fields.intersection(vals)
-        if changed_fields and self.filtered(lambda record: record.state == 'posted'):
-            raise ValidationError(_(
-                'Posted transactions are immutable. Cannot change: %s',
-                ', '.join(sorted(changed_fields)),
-            ))
-        return super().write(vals)
+    @api.constrains('state', 'factor_id', 'quantity', 'uom_id', 'activity_date', 'department_id', 'kg_co2e', 'calculation_trace')
+    def _check_posted_immutable(self):
+        for record in self:
+            if record.state == 'posted' and record._origin.state == 'posted':
+                changed_fields = []
+                for field_name in ['factor_id', 'quantity', 'uom_id', 'activity_date', 'department_id', 'kg_co2e', 'calculation_trace', 'source_reference']:
+                    if record[field_name] != record._origin[field_name]:
+                        changed_fields.append(field_name)
+                if changed_fields:
+                    raise ValidationError(_(
+                        'Posted transactions are immutable. Cannot change: %s',
+                        ', '.join(changed_fields)
+                    ))
 
     @api.constrains('quantity')
     def _check_quantity_positive(self):

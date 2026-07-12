@@ -4,7 +4,6 @@ from odoo.exceptions import ValidationError, UserError
 
 class EcodooEmissionFactor(models.Model):
     _name = 'ecodoo.emission.factor'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Emission Factor'
     _order = 'code, version desc'
     _rec_name = 'display_name'
@@ -93,18 +92,19 @@ class EcodooEmissionFactor(models.Model):
                 raise UserError(_('Can only reset to draft from Draft state (archived factors cannot be reset).'))
             record.state = 'draft'
 
-    def write(self, vals):
-        immutable_fields = {
-            'code', 'kg_co2e_per_unit', 'input_uom_id', 'version',
-            'source_url', 'valid_from', 'valid_to',
-        }
-        changed_fields = immutable_fields.intersection(vals)
-        if changed_fields and self.filtered(lambda record: record.state == 'approved'):
-            raise ValidationError(_(
-                'Approved factors are immutable. Cannot change: %s',
-                ', '.join(sorted(changed_fields)),
-            ))
-        return super().write(vals)
+    @api.constrains('state', 'code', 'kg_co2e_per_unit', 'input_uom_id', 'version', 'source_url', 'valid_from', 'valid_to')
+    def _check_approved_immutable(self):
+        for record in self:
+            if record.state == 'approved' and record._origin.state == 'approved':
+                changed_fields = []
+                for field_name in ['code', 'kg_co2e_per_unit', 'input_uom_id', 'version', 'source_url', 'valid_from', 'valid_to']:
+                    if record[field_name] != record._origin[field_name]:
+                        changed_fields.append(field_name)
+                if changed_fields:
+                    raise ValidationError(_(
+                        'Approved factors are immutable. Cannot change: %s',
+                        ', '.join(changed_fields)
+                    ))
 
     @api.model
     def _get_approved_factor_domain(self, company_id, activity_type, activity_date):
@@ -120,9 +120,13 @@ class EcodooEmissionFactor(models.Model):
             ]
         return domain
 
+    def name_get(self):
+        return [(r.id, f'{r.name} ({r.code} v{r.version})') for r in self]
+
     @api.model
-    def _name_search(self, name='', domain=None, operator='ilike', limit=None, order=None):
-        domain = domain or []
+    def _name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):
+        args = args or []
+        domain = []
         if name:
-            domain = ['|', ('name', operator, name), ('code', operator, name)] + domain
-        return self._search(domain, limit=limit, order=order)
+            domain = ['|', ('name', operator, name), ('code', operator, name)]
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)

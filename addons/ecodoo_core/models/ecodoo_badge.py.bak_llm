@@ -71,18 +71,3 @@ class HrEmployee(models.Model):
         default=0,
         help='Total XP earned from challenges',
     )
-    ecodoo_employee_badge_ids = fields.One2many(
-        'ecodoo.employee.badge',
-        'employee_id',
-        string='EcoDoo Badges',
-    )
-    ecodoo_challenge_participation_ids = fields.One2many(
-        'ecodoo.challenge.participation',
-        'employee_id',
-        string='EcoDoo Challenge Participations',
-    )
-    ecodoo_policy_acknowledgement_ids = fields.One2many(
-        'ecodoo.policy.acknowledgement',
-        'employee_id',
-        string='EcoDoo Policy Acknowledgements',
-    )

@@ -1,10 +1,8 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
 
 
 class EcodooGoal(models.Model):
     _name = 'ecodoo.goal'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Emission Reduction Goal'
     _order = 'period_start desc'
     _rec_name = 'display_name'

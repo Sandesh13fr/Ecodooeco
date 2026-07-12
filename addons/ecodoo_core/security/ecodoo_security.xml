@@ -1,23 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Security Groups -->
+
+        <!-- EcoDoo access-rights category -->
+        <record id="privilege_ecodoo" model="res.groups.privilege">
+            <field name="name">EcoDoo</field>
+            <field name="category_id" ref="base.module_category_extra"/>
+            <field name="sequence">100</field>
+        </record>
+
+        <!-- Employee Group -->
         <record id="group_ecodoo_employee" model="res.groups">
             <field name="name">EcoDoo Employee</field>
-            <field name="category_id" ref="base.module_category_extra"/>
+            <field name="privilege_id" ref="ecodoo_core.privilege_ecodoo"/>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
+        <!-- Manager Group -->
         <record id="group_ecodoo_manager" model="res.groups">
             <field name="name">EcoDoo Manager</field>
-            <field name="category_id" ref="base.module_category_extra"/>
-            <field name="implied_ids" eval="[(4, ref('ecodoo_core.group_ecodoo_employee')), (4, ref('base.group_user'))]"/>
+            <field name="privilege_id" ref="ecodoo_core.privilege_ecodoo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('ecodoo_core.group_ecodoo_employee'))]"/>
         </record>
 
+        <!-- Executive Group -->
         <record id="group_ecodoo_executive" model="res.groups">
             <field name="name">EcoDoo Executive</field>
-            <field name="category_id" ref="base.module_category_extra"/>
-            <field name="implied_ids" eval="[(4, ref('ecodoo_core.group_ecodoo_employee')), (4, ref('base.group_user'))]"/>
+            <field name="privilege_id" ref="ecodoo_core.privilege_ecodoo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('ecodoo_core.group_ecodoo_employee'))]"/>
         </record>
+
     </data>
 </odoo>

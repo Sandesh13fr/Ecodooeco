@@ -2,8 +2,7 @@
 """Test for ecodoo_core models"""
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import ValidationError, UserError
-from odoo.tools import float_round, mute_logger
-from psycopg2.errors import CheckViolation, UniqueViolation
+from odoo.tools import float_round
 
 
 class TestEmissionFactor(TransactionCase):
@@ -76,7 +75,7 @@ class TestEmissionFactor(TransactionCase):
             'version': '1.0',
             'company_id': self.company.id,
         })
-        with mute_logger('odoo.sql_db'), self.assertRaises(UniqueViolation):
+        with self.assertRaises(ValidationError):
             self.env['ecodoo.emission.factor'].create({
                 'name': 'Test Diesel 2',
                 'code': 'DIESEL-TEST',
@@ -89,7 +88,7 @@ class TestEmissionFactor(TransactionCase):
 
     def test_positive_factor_constraint(self):
         """Test that kg_co2e_per_unit must be positive"""
-        with mute_logger('odoo.sql_db'), self.assertRaises(CheckViolation):
+        with self.assertRaises(ValidationError):
             self.env['ecodoo.emission.factor'].create({
                 'name': 'Test',
                 'code': 'TEST-NEG',
@@ -233,8 +232,11 @@ class TestCarbonTransaction(TransactionCase):
         """Test unit of measure conversion"""
         uom_ml = self.env['uom.uom'].create({
             'name': 'Milliliter',
-            'relative_uom_id': self.uom_litre.id,
-            'relative_factor': 0.001,
+            'category_id': self.uom_litre.category_id.id,
+            'uom_type': 'smaller',
+            'factor': 1000,
+            'factor_inv': 0.001,
+            'rounding': 0.001,
         })
         
         txn = self.env['ecodoo.carbon.transaction'].create({
@@ -420,7 +422,7 @@ class TestPolicy(TransactionCase):
             'employee_id': self.emp.id,
             'company_id': self.company.id,
         })
-        with mute_logger('odoo.sql_db'), self.assertRaises(UniqueViolation):
+        with self.assertRaises(ValidationError):
             self.env['ecodoo.policy.acknowledgement'].create({
                 'policy_id': policy.id,
                 'employee_id': self.emp.id,
@@ -580,7 +582,7 @@ class TestChallenge(TransactionCase):
             'employee_id': self.emp1.id,
             'company_id': self.company.id,
         })
-        with mute_logger('odoo.sql_db'), self.assertRaises(UniqueViolation):
+        with self.assertRaises(ValidationError):
             self.env['ecodoo.challenge.participation'].create({
                 'challenge_id': challenge.id,
                 'employee_id': self.emp1.id,
@@ -713,12 +715,9 @@ class TestDashboard(TransactionCase):
             'state': 'approved',
             'company_id': self.company.id,
         })
-        active_employee_count = self.env['hr.employee'].search_count([
-            ('company_id', '=', self.company.id),
-            ('active', '=', True),
-        ])
+        # 2 unique employees / 3 active employees * 100 = 66.67
         score = dashboard._compute_social_score(self.company)
-        self.assertAlmostEqual(score, 2 / active_employee_count * 100, places=1)
+        self.assertAlmostEqual(score, 66.67, places=1)
 
     def test_governance_score(self):
         """Test governance score calculation"""
@@ -736,10 +735,7 @@ class TestDashboard(TransactionCase):
             'state': 'published',
             'company_id': self.company.id,
         })
-        active_employee_count = self.env['hr.employee'].search_count([
-            ('company_id', '=', self.company.id),
-            ('active', '=', True),
-        ])
+        # 3 active employees, 1 policy
         self.env['ecodoo.policy.acknowledgement'].create({
             'policy_id': policy.id,
             'employee_id': self.emp1.id,
@@ -750,11 +746,11 @@ class TestDashboard(TransactionCase):
             'employee_id': self.emp2.id,
             'company_id': self.company.id,
         })
-        # ack_rate = 2 / (1 * active employee count)
+        # ack_rate = 2 / (1 * 3) = 0.667
         # No issues -> resolution_rate = 0
-        expected_ack_score = 50 * (2 / active_employee_count)
+        # governance = 50 * 0.667 + 50 * 0 = 33.33
         score = dashboard._compute_governance_score(self.company)
-        self.assertAlmostEqual(score, expected_ack_score, places=1)
+        self.assertAlmostEqual(score, 33.33, places=1)
         
         # Add issues
         self.env['ecodoo.compliance.issue'].create({
@@ -771,9 +767,9 @@ class TestDashboard(TransactionCase):
             'company_id': self.company.id,
         })
         # resolution_rate = 1/2 = 0.5
-        # resolution contributes another 25 points (one of two issues resolved)
+        # governance = 50 * 0.667 + 50 * 0.5 = 33.33 + 25 = 58.33
         score = dashboard._compute_governance_score(self.company)
-        self.assertAlmostEqual(score, expected_ack_score + 25, places=1)
+        self.assertAlmostEqual(score, 58.33, places=1)
 
     def test_overall_score(self):
         """Test overall score weights: 0.4*E + 0.3*S + 0.3*G"""

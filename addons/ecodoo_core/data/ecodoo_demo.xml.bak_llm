@@ -41,7 +41,7 @@
             <field name="password">demo</field>
             <field name="company_id" ref="demo_company_greenroute"/>
             <field name="company_ids" eval="[(4, ref('demo_company_greenroute'))]"/>
-            <field name="group_ids" eval="[Command.link(ref('ecodoo_core.group_ecodoo_manager'))]"/>
+            <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('ecodoo_core.group_ecodoo_manager'))]"/>
         </record>
 
         <record id="demo_user_bob" model="res.users">
@@ -51,7 +51,7 @@
             <field name="password">demo</field>
             <field name="company_id" ref="demo_company_greenroute"/>
             <field name="company_ids" eval="[(4, ref('demo_company_greenroute'))]"/>
-            <field name="group_ids" eval="[Command.link(ref('ecodoo_core.group_ecodoo_employee'))]"/>
+            <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('ecodoo_core.group_ecodoo_employee'))]"/>
         </record>
 
         <record id="demo_user_carol" model="res.users">
@@ -61,7 +61,7 @@
             <field name="password">demo</field>
             <field name="company_id" ref="demo_company_greenroute"/>
             <field name="company_ids" eval="[(4, ref('demo_company_greenroute'))]"/>
-            <field name="group_ids" eval="[Command.link(ref('ecodoo_core.group_ecodoo_employee'))]"/>
+            <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('ecodoo_core.group_ecodoo_employee'))]"/>
         </record>
 
         <record id="demo_user_dave" model="res.users">
@@ -71,7 +71,7 @@
             <field name="password">demo</field>
             <field name="company_id" ref="demo_company_greenroute"/>
             <field name="company_ids" eval="[(4, ref('demo_company_greenroute'))]"/>
-            <field name="group_ids" eval="[Command.link(ref('ecodoo_core.group_ecodoo_employee'))]"/>
+            <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('ecodoo_core.group_ecodoo_employee'))]"/>
         </record>
 
         <!-- Demo Employees -->
@@ -215,15 +215,6 @@
             <field name="company_id" ref="demo_company_greenroute"/>
         </record>
 
-        <!-- Badge: Eco Starter, xp_threshold 50 -->
-        <record id="demo_badge_eco_starter" model="ecodoo.badge">
-            <field name="name">Eco Starter</field>
-            <field name="description">Completed first sustainability challenge</field>
-            <field name="xp_threshold">50</field>
-            <field name="active">True</field>
-            <field name="company_id" ref="demo_company_greenroute"/>
-        </record>
-
         <!-- Challenge: Car-Free Commute, 50 XP, active, 2 approved participations -->
         <record id="demo_challenge_carfree" model="ecodoo.challenge">
             <field name="name">Car-Free Commute</field>
@@ -256,6 +247,15 @@
             <field name="approved_by" ref="demo_user_alice"/>
             <field name="approved_at">2026-07-18 14:30:00</field>
             <field name="xp_awarded">True</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <!-- Badge: Eco Starter, xp_threshold 50 -->
+        <record id="demo_badge_eco_starter" model="ecodoo.badge">
+            <field name="name">Eco Starter</field>
+            <field name="description">Completed first sustainability challenge</field>
+            <field name="xp_threshold">50</field>
+            <field name="active">True</field>
             <field name="company_id" ref="demo_company_greenroute"/>
         </record>
 

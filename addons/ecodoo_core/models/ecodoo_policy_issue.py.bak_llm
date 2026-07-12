@@ -4,7 +4,6 @@ from odoo.exceptions import ValidationError, UserError
 
 class EcodooPolicy(models.Model):
     _name = 'ecodoo.policy'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'ESG Policy'
     _order = 'effective_date desc'
     _rec_name = 'display_name'
@@ -54,18 +53,19 @@ class EcodooPolicy(models.Model):
                 raise UserError(_('Can only archive from Published state.'))
             record.state = 'archived'
 
-    def write(self, vals):
-        immutable_fields = {
-            'name', 'code', 'version', 'body', 'owner_id',
-            'effective_date', 'review_date',
-        }
-        changed_fields = immutable_fields.intersection(vals)
-        if changed_fields and self.filtered(lambda record: record.state == 'published'):
-            raise ValidationError(_(
-                'Published policies are immutable. Cannot change: %s',
-                ', '.join(sorted(changed_fields)),
-            ))
-        return super().write(vals)
+    @api.constrains('state', 'name', 'code', 'version', 'body', 'owner_id', 'effective_date', 'review_date')
+    def _check_published_immutable(self):
+        for record in self:
+            if record.state == 'published' and record._origin.state == 'published':
+                changed_fields = []
+                for field_name in ['name', 'code', 'version', 'body', 'owner_id', 'effective_date', 'review_date']:
+                    if record[field_name] != record._origin[field_name]:
+                        changed_fields.append(field_name)
+                if changed_fields:
+                    raise ValidationError(_(
+                        'Published policies are immutable. Cannot change: %s',
+                        ', '.join(changed_fields)
+                    ))
 
 
 class EcodooPolicyAcknowledgement(models.Model):
@@ -109,7 +109,6 @@ class EcodooPolicyAcknowledgement(models.Model):
 
 class EcodooComplianceIssue(models.Model):
     _name = 'ecodoo.compliance.issue'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Compliance Issue'
     _order = 'severity desc, due_date asc'
     _rec_name = 'name'

@@ -22,11 +22,11 @@
             <field name="name">ecodoo.policy.acknowledgement.tree</field>
             <field name="model">ecodoo.policy.acknowledgement</field>
             <field name="arch" type="xml">
-                <tree string="Policy Acknowledgements">
+                <list string="Policy Acknowledgements">
                     <field name="policy_id"/>
                     <field name="employee_id"/>
                     <field name="acknowledged_at"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -45,7 +45,7 @@
         <record id="action_ecodoo_policy_acknowledgement" model="ir.actions.act_window">
             <field name="name">Policy Acknowledgements</field>
             <field name="res_model">ecodoo.policy.acknowledgement</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="search_view_id" ref="view_ecodoo_policy_acknowledgement_search"/>
         </record>
 
@@ -99,14 +99,14 @@
             <field name="name">ecodoo.compliance.issue.tree</field>
             <field name="model">ecodoo.compliance.issue</field>
             <field name="arch" type="xml">
-                <tree string="Compliance Issues" decoration-danger="severity == 'critical'" decoration-warning="severity == 'high'" decoration-info="severity == 'medium'" decoration-muted="severity == 'low'">
+                <list string="Compliance Issues" decoration-danger="severity == 'critical'" decoration-warning="severity == 'high'" decoration-info="severity == 'medium'" decoration-muted="severity == 'low'">
                     <field name="name"/>
                     <field name="severity"/>
                     <field name="owner_id"/>
                     <field name="due_date"/>
                     <field name="state"/>
                     <field name="resolved_at"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -122,7 +122,7 @@
                     <filter name="resolved" string="Resolved" domain="[('state', '=', 'resolved')]"/>
                     <filter name="critical" string="Critical" domain="[('severity', '=', 'critical')]"/>
                     <filter name="high" string="High" domain="[('severity', '=', 'high')]"/>
-                    <group string="Group By">
+                    <group>
                         <filter name="by_state" string="State" domain="[]" context="{'group_by': 'state'}"/>
                         <filter name="by_severity" string="Severity" domain="[]" context="{'group_by': 'severity'}"/>
                         <filter name="by_owner" string="Owner" domain="[]" context="{'group_by': 'owner_id'}"/>
@@ -134,261 +134,9 @@
         <record id="action_ecodoo_compliance_issue" model="ir.actions.act_window">
             <field name="name">Compliance Issues</field>
             <field name="res_model">ecodoo.compliance.issue</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="search_view_id" ref="view_ecodoo_compliance_issue_search"/>
         </record>
 
-        <!-- Challenge Views -->
-        <record id="view_ecodoo_challenge_form" model="ir.ui.view">
-            <field name="name">ecodoo.challenge.form</field>
-            <field name="model">ecodoo.challenge</field>
-            <field name="arch" type="xml">
-                <form string="Challenge">
-                    <header>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,active,closed"/>
-                        <button name="action_activate" string="Activate" type="object" class="btn-primary" invisible="state != 'draft'" groups="ecodoo_core.group_ecodoo_manager"/>
-                        <button name="action_close" string="Close" type="object" class="btn-secondary" invisible="state != 'active'" groups="ecodoo_core.group_ecodoo_manager"/>
-                        <button name="action_reset_to_draft" string="Reset to Draft" type="object" class="btn-secondary" invisible="state != 'draft'" groups="ecodoo_core.group_ecodoo_manager"/>
-                    </header>
-                    <sheet>
-                        <group>
-                            <group>
-                                <field name="name"/>
-                                <field name="start_date"/>
-                                <field name="end_date"/>
-                                <field name="xp_reward"/>
-                            </group>
-                            <group>
-                                <field name="badge_id" options="{'no_create': True}"/>
-                                <field name="state"/>
-                                <field name="company_id" options="{'no_create': True}"/>
-                            </group>
-                        </group>
-                        <group string="Description">
-                            <field name="description"/>
-                        </group>
-                    </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="activity_ids" widget="mail_activity"/>
-                        <field name="message_ids" widget="mail_thread"/>
-                    </div>
-                </form>
-            </field>
-        </record>
-
-        <record id="view_ecodoo_challenge_tree" model="ir.ui.view">
-            <field name="name">ecodoo.challenge.tree</field>
-            <field name="model">ecodoo.challenge</field>
-            <field name="arch" type="xml">
-                <tree string="Challenges">
-                    <field name="name"/>
-                    <field name="start_date"/>
-                    <field name="end_date"/>
-                    <field name="xp_reward"/>
-                    <field name="badge_id"/>
-                    <field name="state"/>
-                </tree>
-            </field>
-        </record>
-
-        <record id="view_ecodoo_challenge_search" model="ir.ui.view">
-            <field name="name">ecodoo.challenge.search</field>
-            <field name="model">ecodoo.challenge</field>
-            <field name="arch" type="xml">
-                <search string="Challenges">
-                    <field name="name" string="Name"/>
-                    <filter name="active" string="Active" domain="[('state', '=', 'active')]"/>
-                    <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
-                    <filter name="closed" string="Closed" domain="[('state', '=', 'closed')]"/>
-                </search>
-            </field>
-        </record>
-
-        <record id="action_ecodoo_challenge" model="ir.actions.act_window">
-            <field name="name">Challenges</field>
-            <field name="res_model">ecodoo.challenge</field>
-            <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="view_ecodoo_challenge_search"/>
-        </record>
-
-        <!-- Challenge Participation Views -->
-        <record id="view_ecodoo_challenge_participation_form" model="ir.ui.view">
-            <field name="name">ecodoo.challenge.participation.form</field>
-            <field name="model">ecodoo.challenge.participation</field>
-            <field name="arch" type="xml">
-                <form string="Challenge Participation">
-                    <header>
-                        <field name="state" widget="statusbar" statusbar_visible="joined,submitted,approved,rejected"/>
-                        <button name="action_submit" string="Submit Proof" type="object" class="btn-primary" invisible="state != 'joined'" groups="ecodoo_core.group_ecodoo_employee"/>
-                        <button name="action_approve" string="Approve" type="object" class="btn-primary" invisible="state != 'submitted'" groups="ecodoo_core.group_ecodoo_manager"/>
-                        <button name="action_reject" string="Reject" type="object" class="btn-secondary" invisible="state != 'submitted'" groups="ecodoo_core.group_ecodoo_manager"/>
-                    </header>
-                    <sheet>
-                        <group>
-                            <group>
-                                <field name="challenge_id" options="{'no_create': True}"/>
-                                <field name="employee_id" options="{'no_create': True}"/>
-                                <field name="state"/>
-                            </group>
-                            <group>
-                                <field name="approved_by" readonly="1"/>
-                                <field name="approved_at" readonly="1"/>
-                                <field name="xp_awarded" readonly="1"/>
-                            </group>
-                        </group>
-                        <group string="Proof / Note">
-                            <field name="proof_note" nolabel="1"/>
-                        </group>
-                    </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="activity_ids" widget="mail_activity"/>
-                        <field name="message_ids" widget="mail_thread"/>
-                    </div>
-                </form>
-            </field>
-        </record>
-
-        <record id="view_ecodoo_challenge_participation_tree" model="ir.ui.view">
-            <field name="name">ecodoo.challenge.participation.tree</field>
-            <field name="model">ecodoo.challenge.participation</field>
-            <field name="arch" type="xml">
-                <tree string="Challenge Participations" decoration-success="state == 'approved'" decoration-warning="state == 'submitted'" decoration-muted="state in ('joined', 'rejected')">
-                    <field name="challenge_id"/>
-                    <field name="employee_id"/>
-                    <field name="state"/>
-                    <field name="approved_by"/>
-                    <field name="approved_at"/>
-                    <field name="xp_awarded"/>
-                </tree>
-            </field>
-        </record>
-
-        <record id="view_ecodoo_challenge_participation_search" model="ir.ui.view">
-            <field name="name">ecodoo.challenge.participation.search</field>
-            <field name="model">ecodoo.challenge.participation</field>
-            <field name="arch" type="xml">
-                <search string="Challenge Participations">
-                    <field name="challenge_id" string="Challenge"/>
-                    <field name="employee_id" string="Employee"/>
-                    <filter name="submitted" string="Submitted" domain="[('state', '=', 'submitted')]"/>
-                    <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
-                    <filter name="rejected" string="Rejected" domain="[('state', '=', 'rejected')]"/>
-                    <filter name="my_participations" string="My Participations" domain="[('employee_id.user_id', '=', uid)]"/>
-                </search>
-            </field>
-        </record>
-
-        <record id="action_ecodoo_challenge_participation" model="ir.actions.act_window">
-            <field name="name">Participations</field>
-            <field name="res_model">ecodoo.challenge.participation</field>
-            <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="view_ecodoo_challenge_participation_search"/>
-        </record>
-
-        <!-- Badge Views -->
-        <record id="view_ecodoo_badge_form" model="ir.ui.view">
-            <field name="name">ecodoo.badge.form</field>
-            <field name="model">ecodoo.badge</field>
-            <field name="arch" type="xml">
-                <form string="Badge">
-                    <sheet>
-                        <group>
-                            <group>
-                                <field name="name"/>
-                                <field name="xp_threshold"/>
-                                <field name="active"/>
-                            </group>
-                            <group>
-                                <field name="company_id" options="{'no_create': True}"/>
-                            </group>
-                        </group>
-                        <group string="Description">
-                            <field name="description"/>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-
-        <record id="view_ecodoo_badge_tree" model="ir.ui.view">
-            <field name="name">ecodoo.badge.tree</field>
-            <field name="model">ecodoo.badge</field>
-            <field name="arch" type="xml">
-                <tree string="Badges">
-                    <field name="name"/>
-                    <field name="xp_threshold"/>
-                    <field name="active"/>
-                </tree>
-            </field>
-        </record>
-
-        <record id="view_ecodoo_badge_search" model="ir.ui.view">
-            <field name="name">ecodoo.badge.search</field>
-            <field name="model">ecodoo.badge</field>
-            <field name="arch" type="xml">
-                <search string="Badges">
-                    <field name="name" string="Name"/>
-                    <filter name="active" string="Active" domain="[('active', '=', True)]"/>
-                </search>
-            </field>
-        </record>
-
-        <record id="action_ecodoo_badge" model="ir.actions.act_window">
-            <field name="name">Badges</field>
-            <field name="res_model">ecodoo.badge</field>
-            <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="view_ecodoo_badge_search"/>
-        </record>
-
-        <!-- Employee Badge Views -->
-        <record id="view_ecodoo_employee_badge_form" model="ir.ui.view">
-            <field name="name">ecodoo.employee.badge.form</field>
-            <field name="model">ecodoo.employee.badge</field>
-            <field name="arch" type="xml">
-                <form string="Employee Badge">
-                    <sheet>
-                        <group>
-                            <field name="employee_id" options="{'no_create': True}"/>
-                            <field name="badge_id" options="{'no_create': True}"/>
-                            <field name="awarded_at" readonly="1"/>
-                            <field name="source_participation_id" options="{'no_create': True}"/>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-
-        <record id="view_ecodoo_employee_badge_tree" model="ir.ui.view">
-            <field name="name">ecodoo.employee.badge.tree</field>
-            <field name="model">ecodoo.employee.badge</field>
-            <field name="arch" type="xml">
-                <tree string="Employee Badges">
-                    <field name="employee_id"/>
-                    <field name="badge_id"/>
-                    <field name="awarded_at"/>
-                </tree>
-            </field>
-        </record>
-
-        <record id="view_ecodoo_employee_badge_search" model="ir.ui.view">
-            <field name="name">ecodoo.employee.badge.search</field>
-            <field name="model">ecodoo.employee.badge</field>
-            <field name="arch" type="xml">
-                <search string="Employee Badges">
-                    <field name="employee_id" string="Employee"/>
-                    <field name="badge_id" string="Badge"/>
-                    <filter name="my_badges" string="My Badges" domain="[('employee_id.user_id', '=', uid)]"/>
-                </search>
-            </field>
-        </record>
-
-        <record id="action_ecodoo_employee_badge" model="ir.actions.act_window">
-            <field name="name">Employee Badges</field>
-            <field name="res_model">ecodoo.employee.badge</field>
-            <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="view_ecodoo_employee_badge_search"/>
-        </record>
     </data>
 </odoo>

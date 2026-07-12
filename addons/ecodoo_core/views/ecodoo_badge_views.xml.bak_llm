@@ -30,19 +30,19 @@
             <field name="name">ecodoo.badge.tree</field>
             <field name="model">ecodoo.badge</field>
             <field name="arch" type="xml">
-                <list string="Badges">
+                <tree string="Badges">
                     <field name="name"/>
                     <field name="xp_threshold"/>
                     <field name="active"/>
                     <field name="company_id"/>
-                </list>
+                </tree>
             </field>
         </record>
 
         <record id="action_ecodoo_badge" model="ir.actions.act_window">
             <field name="name">Badges</field>
             <field name="res_model">ecodoo.badge</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">tree,form</field>
         </record>
 
         <!-- Employee Badge Views -->
@@ -71,12 +71,12 @@
             <field name="name">ecodoo.employee.badge.tree</field>
             <field name="model">ecodoo.employee.badge</field>
             <field name="arch" type="xml">
-                <list string="Employee Badges">
+                <tree string="Employee Badges">
                     <field name="employee_id"/>
                     <field name="badge_id"/>
                     <field name="awarded_at"/>
                     <field name="source_participation_id"/>
-                </list>
+                </tree>
             </field>
         </record>
 
@@ -95,7 +95,7 @@
         <record id="action_ecodoo_employee_badge" model="ir.actions.act_window">
             <field name="name">Employee Badges</field>
             <field name="res_model">ecodoo.employee.badge</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="view_ecodoo_employee_badge_search"/>
         </record>
 
@@ -112,25 +112,52 @@
                         </group>
                         <separator string="Badges Earned"/>
                         <field name="ecodoo_employee_badge_ids" readonly="1">
-                            <list string="Badges" editable="bottom">
+                            <tree string="Badges" editable="bottom">
                                 <field name="badge_id"/>
                                 <field name="awarded_at"/>
                                 <field name="source_participation_id"/>
-                            </list>
+                            </tree>
                         </field>
                         <separator string="Participations"/>
                         <field name="ecodoo_challenge_participation_ids" readonly="1">
-                            <list string="Participations" editable="bottom">
+                            <tree string="Participations" editable="bottom">
                                 <field name="challenge_id"/>
                                 <field name="state"/>
                                 <field name="approved_at"/>
                                 <field name="xp_awarded"/>
-                            </list>
+                            </tree>
                         </field>
                     </page>
                 </xpath>
             </field>
         </record>
 
+        <!-- Add x2many fields to hr.employee for the one2many relations -->
+        <record id="ecodoo_employee_badge_relation" model="ir.model.fields">
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="name">ecodoo_employee_badge_ids</field>
+            <field name="field_description">EcoDoo Badges</field>
+            <field name="ttype">one2many</field>
+            <field name="relation">ecodoo.employee.badge</field>
+            <field name="relation_field">employee_id</field>
+        </record>
+
+        <record id="ecodoo_challenge_participation_relation" model="ir.model.fields">
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="name">ecodoo_challenge_participation_ids</field>
+            <field name="field_description">EcoDoo Challenge Participations</field>
+            <field name="ttype">one2many</field>
+            <field name="relation">ecodoo.challenge.participation</field>
+            <field name="relation_field">employee_id</field>
+        </record>
+
+        <record id="ecodoo_policy_acknowledgement_relation" model="ir.model.fields">
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="name">ecodoo_policy_acknowledgement_ids</field>
+            <field name="field_description">EcoDoo Policy Acknowledgements</field>
+            <field name="ttype">one2many</field>
+            <field name="relation">ecodoo.policy.acknowledgement</field>
+            <field name="relation_field">employee_id</field>
+        </record>
     </data>
 </odoo>
