@@ -18,14 +18,34 @@ const role = computed<Role>(() => {
   return roles.includes(raw as Role) ? (raw as Role) : 'manager'
 })
 
+type DataState = 'ready' | 'loading' | 'empty' | 'error'
+const dataState = computed<DataState>(() => {
+  const raw = route.query.state
+  return ['loading', 'empty', 'error'].includes(String(raw)) ? (raw as DataState) : 'ready'
+})
+
+const rolePages: Record<Role, PageKey[]> = {
+  employee: ['challenges', 'participation', 'badges', 'policies', 'acknowledgements'],
+  manager: pageKeys,
+  executive: ['command-center', 'transactions', 'goals', 'policies', 'issues', 'summary'],
+}
+
 const currentNav = computed(
   () => navItems.find((item) => item.page === currentPage.value) ?? navItems[0],
 )
 const progressWidth = computed(() => `${Math.min(goalProgress, 100).toFixed(1)}%`)
 const canManage = computed(() => role.value === 'manager')
+const canViewPage = computed(() => rolePages[role.value].includes(currentPage.value))
+const visibleNav = computed(() =>
+  navItems.filter((item) => rolePages[role.value].includes(item.page)),
+)
+const firstRolePage = computed<PageKey>(() => rolePages[role.value][0] ?? 'command-center')
 
-function routeFor(page: PageKey, selectedRole = role.value) {
-  return { path: `/app/${page}`, query: { role: selectedRole } }
+function routeFor(page: PageKey, selectedRole = role.value, state = dataState.value) {
+  return {
+    path: `/app/${page}`,
+    query: { role: selectedRole, ...(state === 'ready' ? {} : { state }) },
+  }
 }
 
 function statusClass(status: string) {
@@ -69,13 +89,14 @@ function printSummary() {
           <p class="px-3 py-2 text-sm font-semibold text-muted">Demo navigation</p>
           <nav class="grid gap-1" aria-label="MVP demo">
             <RouterLink
-              v-for="item in navItems"
+              v-for="item in visibleNav"
               :key="item.page"
               :to="routeFor(item.page)"
               :class="[
-                'rounded-lg px-3 py-2 text-sm font-medium',
+                'min-h-11 rounded-lg px-3 py-2 text-sm font-medium',
                 currentPage === item.page ? 'bg-teal text-white' : 'text-ink hover:bg-mist',
               ]"
+              :aria-current="currentPage === item.page ? 'page' : undefined"
             >
               <span class="block text-xs opacity-75">{{ item.group }}</span>
               {{ item.label }}
@@ -94,8 +115,8 @@ function printSummary() {
                   {{ currentNav.label }}
                 </h1>
                 <p class="mt-3 max-w-[70ch] leading-7 text-muted">
-                  Demo fallback data is active. Live backend integration can map into this contract
-                  without changing the visible workflow.
+                  Deterministic demo data keeps the full evidence path available when the live Odoo
+                  endpoint is not connected.
                 </p>
               </div>
               <div class="text-sm text-muted">
@@ -104,7 +125,99 @@ function printSummary() {
               </div>
             </div>
 
-            <template v-if="currentPage === 'command-center'">
+            <nav class="no-print mb-6 flex flex-wrap gap-2" aria-label="Preview data state">
+              <RouterLink
+                v-for="state in ['ready', 'loading', 'empty', 'error'] as const"
+                :key="state"
+                :to="routeFor(currentPage, role, state)"
+                :aria-current="dataState === state ? 'true' : undefined"
+                :class="[
+                  'inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold capitalize',
+                  dataState === state
+                    ? 'bg-navy text-white'
+                    : 'border border-navy/15 text-navy hover:bg-mist',
+                ]"
+              >
+                {{ state }}
+              </RouterLink>
+            </nav>
+
+            <section v-if="!canViewPage" class="rounded-xl bg-mist p-8" role="status">
+              <p class="text-sm font-semibold text-gold-ink">Restricted role preview</p>
+              <h2 class="mt-2 text-xl font-semibold text-navy">
+                This page is not available to {{ role }} users.
+              </h2>
+              <p class="mt-3 max-w-[65ch] text-muted">
+                The navigation is filtered for this role. Odoo access groups and record rules remain
+                authoritative.
+              </p>
+              <RouterLink
+                :to="routeFor(firstRolePage)"
+                class="mt-5 inline-flex min-h-11 items-center font-semibold text-teal-dark"
+                >Open an available page →</RouterLink
+              >
+            </section>
+
+            <section
+              v-else-if="dataState === 'loading'"
+              aria-busy="true"
+              aria-label="Loading data"
+              class="space-y-4"
+            >
+              <div class="h-28 animate-pulse rounded-xl bg-mist"></div>
+              <div class="grid gap-4 md:grid-cols-3">
+                <div
+                  v-for="index in 3"
+                  :key="index"
+                  class="h-40 animate-pulse rounded-xl bg-mist"
+                ></div>
+              </div>
+            </section>
+
+            <section v-else-if="dataState === 'empty'" class="rounded-xl bg-mist p-8" role="status">
+              <p class="text-sm font-semibold text-teal-dark">No records yet</p>
+              <h2 class="mt-2 text-xl font-semibold text-navy">
+                Approved source records will appear here.
+              </h2>
+              <p class="mt-3 max-w-[65ch] text-muted">
+                Each record will retain its quantity, unit, factor version, calculation path, and
+                approval state.
+              </p>
+              <RouterLink
+                :to="routeFor('transactions', role, 'ready')"
+                class="mt-5 inline-flex min-h-11 items-center font-semibold text-teal-dark"
+                >Open Carbon Transactions →</RouterLink
+              >
+            </section>
+
+            <section
+              v-else-if="dataState === 'error'"
+              class="rounded-xl bg-gold/10 p-8"
+              role="alert"
+            >
+              <p class="text-sm font-semibold text-gold-ink">Odoo data is unavailable</p>
+              <h2 class="mt-2 text-xl font-semibold text-navy">
+                The source records are unchanged.
+              </h2>
+              <p class="mt-3 max-w-[65ch] text-muted">
+                Retry the demo state or inspect the deterministic carbon transaction evidence
+                directly.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-3">
+                <RouterLink
+                  :to="routeFor(currentPage, role, 'ready')"
+                  class="inline-flex min-h-11 items-center rounded-lg bg-navy px-4 font-semibold text-white"
+                  >Try again</RouterLink
+                >
+                <RouterLink
+                  :to="routeFor('transactions', role, 'ready')"
+                  class="inline-flex min-h-11 items-center px-2 font-semibold text-teal-dark"
+                  >Open transactions →</RouterLink
+                >
+              </div>
+            </section>
+
+            <template v-else-if="currentPage === 'command-center'">
               <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <article
                   v-for="item in [
@@ -144,11 +257,20 @@ function printSummary() {
                 </article>
 
                 <article class="rounded-xl border border-navy/10 p-5">
-                  <h2 class="text-xl font-semibold text-navy">Fallback states</h2>
+                  <h2 class="text-xl font-semibold text-navy">Review next</h2>
                   <ul class="mt-4 space-y-3 text-sm text-muted">
-                    <li>Loading: show skeleton cards while dashboard data is requested.</li>
-                    <li>Empty: point users to Carbon Transactions.</li>
-                    <li>Error: keep this fixture visible and link to the trace record.</li>
+                    <li>
+                      <strong class="text-navy">Goal:</strong> Logistics is 21.6 kg CO2e over
+                      target.
+                    </li>
+                    <li>
+                      <strong class="text-navy">Evidence:</strong> One calculated transaction is not
+                      posted.
+                    </li>
+                    <li>
+                      <strong class="text-navy">Governance:</strong> One supplier-evidence issue is
+                      open.
+                    </li>
                   </ul>
                   <div class="mt-5">
                     <BaseButton href="/app/transactions" size="compact"

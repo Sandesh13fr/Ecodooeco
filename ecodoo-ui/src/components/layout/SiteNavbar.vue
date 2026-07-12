@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import PageContainer from './PageContainer.vue'
-import BaseButton from '../ui/BaseButton.vue'
 
 const scrolled = ref(false)
 const mobileMenuOpen = ref(false)

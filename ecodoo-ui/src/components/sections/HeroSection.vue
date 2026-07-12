@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import PageContainer from '../layout/PageContainer.vue'
-import BaseButton from '../ui/BaseButton.vue'
 import { useReducedMotion } from '../../composables/useReducedMotion'
 
 const videoFailed = ref(false)
 const { prefersReducedMotion } = useReducedMotion()
 const videoUrl = '/hero-vedio.mp4'
 const posterUrl = '/hero-poster.webp'
+const videoRef = ref<HTMLVideoElement | null>(null)
 
 const scrollY = ref(0)
 const handleScroll = () => {
@@ -16,6 +16,27 @@ const handleScroll = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
+  if (videoRef.value) {
+    videoRef.value.muted = true
+    videoRef.value.defaultMuted = true
+    videoRef.value.playsInline = true
+    const playPromise = videoRef.value.play()
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        const retryPlay = () => {
+          if (videoRef.value) {
+            videoRef.value.play().catch(() => {})
+          }
+          window.removeEventListener('click', retryPlay)
+          window.removeEventListener('touchstart', retryPlay)
+          window.removeEventListener('keydown', retryPlay)
+        }
+        window.addEventListener('click', retryPlay, { once: true })
+        window.addEventListener('touchstart', retryPlay, { once: true })
+        window.addEventListener('keydown', retryPlay, { once: true })
+      })
+    }
+  }
 })
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
@@ -32,12 +53,13 @@ const parallaxStyle = (factor: number) => ({
     <div class="absolute inset-0 scale-110" :style="parallaxStyle(0.3)">
       <video
         v-if="!videoFailed && !prefersReducedMotion"
+        ref="videoRef"
         class="h-full w-full object-cover"
         autoplay
-        muted
+        :muted="true"
         loop
         playsinline
-        preload="metadata"
+        preload="auto"
         :poster="posterUrl"
         aria-hidden="true"
         @error="videoFailed = true"
