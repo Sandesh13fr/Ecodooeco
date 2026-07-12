@@ -7,6 +7,7 @@ import { demoData, goalProgress, navItems, roles, type PageKey, type Role } from
 
 const route = useRoute()
 const router = useRouter()
+const brandMark = '/graphics/ecodoo-mark.webp'
 const evidencePathGraphic = '/graphics/evidence-path.webp'
 const pageKeys = navItems.map((item) => item.page)
 
@@ -71,9 +72,17 @@ function printSummary() {
       <header class="no-print flex flex-wrap items-center justify-between gap-4">
         <RouterLink
           to="/"
-          class="inline-flex min-h-11 items-center text-xl font-semibold text-navy"
+          class="inline-flex min-h-11 items-center gap-2.5 text-xl font-semibold text-navy"
         >
-          Ecodoo
+          <img
+            :src="brandMark"
+            alt=""
+            width="32"
+            height="32"
+            class="h-8 w-8 rounded-lg"
+            aria-hidden="true"
+          />
+          <span>Ecodoo</span>
         </RouterLink>
         <div class="flex flex-wrap items-center gap-2" aria-label="Presentation role">
           <RouterLink

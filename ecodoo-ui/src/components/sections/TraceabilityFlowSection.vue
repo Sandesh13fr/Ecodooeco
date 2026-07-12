@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PageContainer from '../layout/PageContainer.vue'
 import FadeIn from '../motion/FadeIn.vue'
+import IconGlyph from '../ui/IconGlyph.vue'
 
 const evidenceLedgerGraphic = '/graphics/evidence-ledger.webp'
 
@@ -10,37 +11,37 @@ const steps = [
     label: 'Source',
     title: 'PO-2026-0418',
     detail: 'Purchase · 2,400 L diesel',
-    icon: '📥',
+    icon: 'inbox',
   },
   {
     num: '02',
     label: 'Factor',
     title: 'SYNTHETIC-FUEL-2026 v1',
     detail: '2.512 kgCO₂e / L',
-    icon: '⚗️',
+    icon: 'flask',
   },
   {
     num: '03',
     label: 'Calculation',
     title: '2,400 × 2.512',
     detail: '6,028.80 kgCO₂e',
-    icon: '🧮',
+    icon: 'calculator',
   },
   {
     num: '04',
     label: 'Goal',
     title: 'Fleet intensity FY26',
     detail: 'Counts toward Q2 baseline',
-    icon: '🎯',
+    icon: 'target',
   },
   {
     num: '05',
     label: 'Report',
     title: 'Management ESG summary',
     detail: 'Trace link retained',
-    icon: '📊',
+    icon: 'chart',
   },
-]
+] as const
 </script>
 
 <template>
@@ -99,7 +100,10 @@ const steps = [
             class="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm transition-all duration-300 hover:border-teal/30 hover:bg-white/8"
           >
             <!-- Number -->
-            <span class="text-xs font-bold text-teal/60">{{ step.num }}</span>
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-xs font-bold text-teal/60">{{ step.num }}</span>
+              <IconGlyph :name="step.icon" class="h-5 w-5 text-teal" />
+            </div>
             <!-- Label -->
             <p class="mt-2 text-xs font-semibold uppercase tracking-widest text-teal">
               {{ step.label }}

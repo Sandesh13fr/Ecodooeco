@@ -1,28 +1,29 @@
 <script setup lang="ts">
 import PageContainer from '../layout/PageContainer.vue'
+import IconGlyph from '../ui/IconGlyph.vue'
 
 const trustItems = [
   {
     title: 'Source lineage',
     desc: 'Drill from a reported result to its originating Odoo record in seconds.',
-    icon: '🔗',
+    icon: 'link',
   },
   {
     title: 'Controlled calculation',
     desc: 'See quantity, units, conversion path, factor version, and timestamp — always.',
-    icon: '⚙️',
+    icon: 'settings',
   },
   {
     title: 'Review history',
     desc: 'Retain approval state and correction history without rewriting the past.',
-    icon: '📋',
+    icon: 'clipboard',
   },
   {
     title: 'Odoo permissions',
     desc: 'Respect company boundaries and role-based access throughout the trace.',
-    icon: '🔐',
+    icon: 'lock',
   },
-]
+] as const
 </script>
 
 <template>
@@ -87,9 +88,9 @@ const trustItems = [
             class="group flex gap-5 rounded-2xl border border-white/8 bg-white/5 p-6 backdrop-blur-sm transition-all duration-300 hover:border-teal/25 hover:bg-white/8"
           >
             <div
-              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/8 text-2xl transition-all group-hover:border-teal/30 group-hover:bg-teal/10"
+              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/8 text-teal transition-all group-hover:border-teal/30 group-hover:bg-teal/10"
             >
-              {{ item.icon }}
+              <IconGlyph :name="item.icon" class="h-5 w-5" />
             </div>
             <div>
               <h3 class="font-semibold text-white">{{ item.title }}</h3>

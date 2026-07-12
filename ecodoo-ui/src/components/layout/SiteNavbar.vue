@@ -4,6 +4,7 @@ import PageContainer from './PageContainer.vue'
 
 const scrolled = ref(false)
 const mobileMenuOpen = ref(false)
+const brandMark = '/graphics/ecodoo-mark.webp'
 
 const handleScroll = () => {
   scrolled.value = window.scrollY > 40
@@ -39,24 +40,18 @@ const navLinks = [
             : 'border border-white/8 bg-[#0a1628]/50 backdrop-blur-md'
         "
       >
-        <!-- Logo -->
         <RouterLink
           to="/"
           class="inline-flex items-center gap-2.5 text-lg font-bold text-white tracking-tight"
         >
-          <div
-            class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal/20 ring-1 ring-teal/40"
-          >
-            <svg class="h-4 w-4 text-teal" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M8 2L2 6v8h4v-4h4v4h4V6L8 2z"
-                stroke="currentColor"
-                stroke-width="1.2"
-                stroke-linejoin="round"
-                fill="rgba(0,201,177,0.2)"
-              />
-            </svg>
-          </div>
+          <img
+            :src="brandMark"
+            alt=""
+            width="32"
+            height="32"
+            class="h-8 w-8 rounded-lg"
+            aria-hidden="true"
+          />
           <span>Ecodoo</span>
         </RouterLink>
 
