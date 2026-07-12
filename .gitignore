@@ -5,3 +5,18 @@ agents/
 docs/Ecodoo_Master_Research_and_Build_Blueprint.md
 AGENTS.md
 blueprint.md
+agent-logs.md
+
+# Local scratch files
+prompt.md
+
+# Local indexes and frontend build output
+.codegraph/
+ecodoo-ui/node_modules/
+ecodoo-ui/dist/
+ecodoo-ui/vite.*.log
+.impeccable
+.cursor
+.codex
+.github
+node_modules
