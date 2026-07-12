@@ -1,6 +1,6 @@
 # Local coding / agent files
 agents/
-
+docs/
 # Planning docs (keep in repo but not tracked)
 docs/Ecodoo_Master_Research_and_Build_Blueprint.md
 AGENTS.md
