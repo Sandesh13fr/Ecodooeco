@@ -16,7 +16,7 @@ import PageContainer from '../layout/PageContainer.vue'
       ></div>
     </div>
 
-    <PageContainer class="relative">
+    <PageContainer :full-width="true" class="relative">
       <!-- Section label -->
       <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-teal">Platform</p>
 

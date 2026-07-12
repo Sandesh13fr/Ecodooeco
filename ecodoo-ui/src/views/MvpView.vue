@@ -67,7 +67,7 @@ function printSummary() {
 
 <template>
   <main class="min-h-screen bg-mist text-ink">
-    <PageContainer class="py-6 sm:py-8">
+    <PageContainer :full-width="true" class="py-6 sm:py-8">
       <header class="no-print flex flex-wrap items-center justify-between gap-4">
         <RouterLink
           to="/"

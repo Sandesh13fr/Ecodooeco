@@ -4,7 +4,7 @@ import BaseButton from '../components/ui/BaseButton.vue'
 </script>
 <template>
   <main class="min-h-screen bg-mist py-10 sm:py-14">
-    <PageContainer>
+    <PageContainer :full-width="true">
       <nav class="flex flex-wrap items-center justify-between gap-4" aria-label="Demo navigation">
         <RouterLink to="/" class="inline-flex min-h-11 items-center font-semibold text-teal"
           >← Ecodoo home</RouterLink
