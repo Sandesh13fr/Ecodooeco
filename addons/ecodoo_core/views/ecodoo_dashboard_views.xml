@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Dashboard Action and Views -->
+        <record id="view_ecodoo_dashboard" model="ir.ui.view">
+            <field name="name">ecodoo.dashboard</field>
+            <field name="model">ir.ui.view</field>
+            <field name="arch" type="xml">
+                <div class="ecodoo-dashboard">
+                    <div class="o_content">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h2 class="text-primary">EcoDoo ESG Dashboard</h2>
+                                <p class="text-muted" t-esc="score_disclaimer"/>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Total CO2e</h5>
+                                        <h2 class="card-text" t-esc="total_co2e"/> kg
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Environmental</h5>
+                                        <h2 class="card-text" t-esc="environmental_score"/>%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Social</h5>
+                                        <h2 class="card-text" t-esc="social_score"/>%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-warning text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Governance</h5>
+                                        <h2 class="card-text" t-esc="governance_score"/>%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="card bg-dark text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Overall Score</h5>
+                                        <h1 class="card-text" t-esc="overall_score"/>%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Active Goals</h5>
+                                        <h3 class="card-text" t-esc="active_goal_count"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Open Issues</h5>
+                                        <h3 class="card-text" t-esc="open_issue_count"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">CO2e by Department</div>
+                                    <div class="card-body">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr><th>Department</th><th>kg CO2e</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr t-foreach="department_series" t-as="dept">
+                                                    <td t-esc="dept.department"/>
+                                                    <td t-esc="dept.kg_co2e"/> kg
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">Recent Transactions</div>
+                                    <div class="card-body">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr><th>Date</th><th>Name</th><th>Dept</th><th>CO2e (kg)</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr t-foreach="recent_transactions" t-as="txn">
+                                                    <td t-esc="txn.activity_date"/>
+                                                    <td t-esc="txn.name"/>
+                                                    <td t-esc="txn.department"/>
+                                                    <td t-esc="txn.kg_co2e"/> kg
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <small class="text-muted">Data freshness: <span t-esc="data_freshness"/></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </field>
+        </record>
+
+        <record id="action_ecodoo_dashboard" model="ir.actions.act_window">
+            <field name="name">EcoDoo Dashboard</field>
+            <field name="res_model">ecodoo.dashboard</field>
+            <field name="view_mode">form</field>
+            <field name="target">main</field>
+            <field name="binding_model_id" ref="model_ir_ui_view"/>
+            <field name="binding_type">action</field>
+        </record>
+
+        <!-- Carbon Transaction Action (reusing existing) -->
+        <record id="action_ecodoo_carbon_transaction" model="ir.actions.act_window">
+            <field name="name">Carbon Transactions</field>
+            <field name="res_model">ecodoo.carbon.transaction</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="search_view_id" ref="view_ecodoo_carbon_transaction_search"/>
+        </record>
+
+        <!-- Goal Action -->
+        <record id="action_ecodoo_goal" model="ir.actions.act_window">
+            <field name="name">Emission Goals</field>
+            <field name="res_model">ecodoo.goal</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_ecodoo_goal_search"/>
+        </record>
+
+        <record id="view_ecodoo_goal_search" model="ir.ui.view">
+            <field name="name">ecodoo.goal.search</field>
+            <field name="model">ecodoo.goal</field>
+            <field name="arch" type="xml">
+                <search string="Emission Goals">
+                    <field name="name" string="Name"/>
+                    <field name="department_id" string="Department"/>
+                    <filter name="active" string="Active" domain="[('state', '=', 'active')]"/>
+                    <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                    <filter name="closed" string="Closed" domain="[('state', '=', 'closed')]"/>
+                    <filter name="on_track" string="On Track" domain="[('status', '=', 'on_track')]"/>
+                    <filter name="at_risk" string="At Risk" domain="[('status', '=', 'at_risk')]"/>
+                    <filter name="off_track" string="Off Track" domain="[('status', '=', 'off_track')]"/>
+                    <group string="Group By">
+                        <filter name="by_department" string="Department" domain="[]" context="{'group_by': 'department_id'}"/>
+                        <filter name="by_state" string="State" domain="[]" context="{'group_by': 'state'}"/>
+                        <filter name="by_status" string="Status" domain="[]" context="{'group_by': 'status'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_goal_tree" model="ir.ui.view">
+            <field name="name">ecodoo.goal.tree</field>
+            <field name="model">ecodoo.goal</field>
+            <field name="arch" type="xml">
+                <tree string="Emission Goals" decoration-success="status == 'on_track'" decoration-warning="status == 'at_risk'" decoration-danger="status == 'off_track'">
+                    <field name="name"/>
+                    <field name="department_id"/>
+                    <field name="period_start"/>
+                    <field name="period_end"/>
+                    <field name="target_kg_co2e"/>
+                    <field name="actual_kg_co2e"/>
+                    <field name="progress_percent"/>
+                    <field name="status"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_goal_form" model="ir.ui.view">
+            <field name="name">ecodoo.goal.form</field>
+            <field name="model">ecodoo.goal</field>
+            <field name="arch" type="xml">
+                <form string="Emission Goal">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,active,closed"/>
+                        <button name="action_activate" string="Activate" type="object" class="btn-primary" invisible="state != 'draft'" groups="ecodoo_core.group_ecodoo_manager"/>
+                        <button name="action_close" string="Close" type="object" class="btn-secondary" invisible="state != 'active'" groups="ecodoo_core.group_ecodoo_manager"/>
+                        <button name="action_reset_to_draft" string="Reset to Draft" type="object" class="btn-secondary" invisible="state != 'draft'" groups="ecodoo_core.group_ecodoo_manager"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="department_id" options="{'no_create': True}"/>
+                                <field name="period_start"/>
+                                <field name="period_end"/>
+                            </group>
+                            <group>
+                                <field name="target_kg_co2e"/>
+                                <field name="actual_kg_co2e" readonly="1"/>
+                                <field name="progress_percent" readonly="1" widget="progressbar" options="{'current_value': 'progress_percent', 'max_value': '115', 'editable': False}"/>
+                                <field name="status" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Policy Action -->
+        <record id="action_ecodoo_policy" model="ir.actions.act_window">
+            <field name="name">Policies</field>
+            <field name="res_model">ecodoo.policy</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_ecodoo_policy_search"/>
+        </record>
+
+        <record id="view_ecodoo_policy_search" model="ir.ui.view">
+            <field name="name">ecodoo.policy.search</field>
+            <field name="model">ecodoo.policy</field>
+            <field name="arch" type="xml">
+                <search string="Policies">
+                    <field name="name" string="Name"/>
+                    <field name="code" string="Code"/>
+                    <filter name="published" string="Published" domain="[('state', '=', 'published')]"/>
+                    <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                    <filter name="archived" string="Archived" domain="[('state', '=', 'archived')]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_policy_tree" model="ir.ui.view">
+            <field name="name">ecodoo.policy.tree</field>
+            <field name="model">ecodoo.policy</field>
+            <field name="arch" type="xml">
+                <tree string="Policies">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="version"/>
+                    <field name="owner_id"/>
+                    <field name="effective_date"/>
+                    <field name="review_date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_policy_form" model="ir.ui.view">
+            <field name="name">ecodoo.policy.form</field>
+            <field name="model">ecodoo.policy</field>
+            <field name="arch" type="xml">
+                <form string="Policy">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,published,archived"/>
+                        <button name="action_publish" string="Publish" type="object" class="btn-primary" invisible="state != 'draft'" groups="ecodoo_core.group_ecodoo_manager"/>
+                        <button name="action_archive" string="Archive" type="object" class="btn-secondary" invisible="state != 'published'" groups="ecodoo_core.group_ecodoo_manager"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="version"/>
+                                <field name="owner_id" options="{'no_create': True}"/>
+                            </group>
+                            <group>
+                                <field name="effective_date"/>
+                                <field name="review_date"/>
+                                <field name="company_id" options="{'no_create': True}"/>
+                            </group>
+                        </group>
+                        <group string="Content">
+                            <field name="body" widget="html"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Menu Items -->
+        <menuitem id="menu_ecodoo_root" name="EcoDoo" sequence="10" web_icon="ecodoo_core,static/description/icon.png"/>
+        
+        <menuitem id="menu_ecodoo_dashboard" name="Dashboard" parent="menu_ecodoo_root" action="action_ecodoo_dashboard" sequence="1"/>
+        
+        <menuitem id="menu_ecodoo_environment" name="Environment" parent="menu_ecodoo_root" sequence="10"/>
+        <menuitem id="menu_ecodoo_emission_factors" name="Emission Factors" parent="menu_ecodoo_environment" action="action_ecodoo_emission_factor" sequence="1"/>
+        <menuitem id="menu_ecodoo_carbon_transactions" name="Carbon Transactions" parent="menu_ecodoo_environment" action="action_ecodoo_carbon_transaction" sequence="2"/>
+        <menuitem id="menu_ecodoo_goals" name="Emission Goals" parent="menu_ecodoo_environment" action="action_ecodoo_goal" sequence="3"/>
+
+        <menuitem id="menu_ecodoo_social" name="Social" parent="menu_ecodoo_root" sequence="20"/>
+        <menuitem id="menu_ecodoo_challenges" name="Challenges" parent="menu_ecodoo_social" action="action_ecodoo_challenge" sequence="1"/>
+        <menuitem id="menu_ecodoo_participations" name="Participations" parent="menu_ecodoo_social" action="action_ecodoo_challenge_participation" sequence="2"/>
+        <menuitem id="menu_ecodoo_badges" name="Badges" parent="menu_ecodoo_social" action="action_ecodoo_badge" sequence="3"/>
+        <menuitem id="menu_ecodoo_employee_badges" name="Employee Badges" parent="menu_ecodoo_social" action="action_ecodoo_employee_badge" sequence="4"/>
+
+        <menuitem id="menu_ecodoo_governance" name="Governance" parent="menu_ecodoo_root" sequence="30"/>
+        <menuitem id="menu_ecodoo_policies" name="Policies" parent="menu_ecodoo_governance" action="action_ecodoo_policy" sequence="1"/>
+        <menuitem id="menu_ecodoo_acknowledgements" name="Acknowledgements" parent="menu_ecodoo_governance" action="action_ecodoo_policy_acknowledgement" sequence="2"/>
+        <menuitem id="menu_ecodoo_compliance_issues" name="Compliance Issues" parent="menu_ecodoo_governance" action="action_ecodoo_compliance_issue" sequence="3"/>
+    </data>
+</odoo>

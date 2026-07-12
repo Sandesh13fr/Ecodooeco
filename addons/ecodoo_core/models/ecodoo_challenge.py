@@ -1,0 +1,156 @@
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError, UserError
+
+
+class EcodooChallenge(models.Model):
+    _name = 'ecodoo.challenge'
+    _description = 'Employee Challenge'
+    _order = 'start_date desc'
+    _rec_name = 'name'
+
+    name = fields.Char(required=True)
+    description = fields.Text()
+    start_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
+    xp_reward = fields.Integer(
+        string='XP Reward',
+        required=True,
+        default=0,
+        help='XP awarded upon successful completion',
+    )
+    badge_id = fields.Many2one('ecodoo.badge', string='Badge Reward')
+    state = fields.Selection(
+        selection=[
+            ('draft', 'Draft'),
+            ('active', 'Active'),
+            ('closed', 'Closed'),
+        ],
+        default='draft',
+        required=True,
+    )
+    company_id = fields.Many2one(
+        'res.company',
+        required=True,
+        default=lambda self: self.env.company,
+    )
+
+    _sql_constraints = [
+        ('dates_order',
+         'CHECK(start_date <= end_date)',
+         'Start date must be before or equal to end date.'),
+        ('xp_positive',
+         'CHECK(xp_reward >= 0)',
+         'XP reward must be non-negative.'),
+    ]
+
+    def action_activate(self):
+        for record in self:
+            if record.state != 'draft':
+                raise UserError(_('Can only activate from Draft state.'))
+            record.state = 'active'
+
+    def action_close(self):
+        for record in self:
+            if record.state != 'active':
+                raise UserError(_('Can only close from Active state.'))
+            record.state = 'closed'
+
+    def action_reset_to_draft(self):
+        for record in self:
+            if record.state != 'draft':
+                raise UserError(_('Can only reset to draft from Draft state.'))
+            record.state = 'draft'
+
+
+class EcodooChallengeParticipation(models.Model):
+    _name = 'ecodoo.challenge.participation'
+    _description = 'Challenge Participation'
+    _rec_name = 'display_name'
+
+    challenge_id = fields.Many2one(
+        'ecodoo.challenge',
+        required=True,
+        ondelete='cascade',
+    )
+    employee_id = fields.Many2one(
+        'hr.employee',
+        required=True,
+    )
+    proof_note = fields.Text(string='Proof/Note')
+    state = fields.Selection(
+        selection=[
+            ('joined', 'Joined'),
+            ('submitted', 'Submitted'),
+            ('approved', 'Approved'),
+            ('rejected', 'Rejected'),
+        ],
+        default='joined',
+        required=True,
+    )
+    approved_by = fields.Many2one('res.users', string='Approved By')
+    approved_at = fields.Datetime()
+    xp_awarded = fields.Boolean(default=False)
+    company_id = fields.Many2one(
+        'res.company',
+        required=True,
+        default=lambda self: self.env.company,
+    )
+    display_name = fields.Char(compute='_compute_display_name', store=True)
+
+    _sql_constraints = [
+        ('challenge_employee_unique',
+         'UNIQUE(challenge_id, employee_id)',
+         'An employee can only participate once per challenge.'),
+    ]
+
+    @api.depends('challenge_id', 'employee_id')
+    def _compute_display_name(self):
+        for record in self:
+            record.display_name = f'{record.challenge_id.name} - {record.employee_id.name}'
+
+    def action_submit(self):
+        for record in self:
+            if record.state != 'joined':
+                raise UserError(_('Can only submit from Joined state.'))
+            if not record.proof_note:
+                raise UserError(_('Proof note is required to submit.'))
+            record.state = 'submitted'
+
+    def action_approve(self):
+        for record in self:
+            if record.state != 'submitted':
+                raise UserError(_('Can only approve from Submitted state.'))
+            if record.xp_awarded:
+                raise UserError(_('XP already awarded for this participation.'))
+            record.state = 'approved'
+            record.approved_by = self.env.user
+            record.approved_at = fields.Datetime.now()
+            record.xp_awarded = True
+            # Award XP and badge
+            record._award_rewards()
+
+    def action_reject(self):
+        for record in self:
+            if record.state != 'submitted':
+                raise UserError(_('Can only reject from Submitted state.'))
+            record.state = 'rejected'
+
+    def _award_rewards(self):
+        for record in self:
+            # Award XP to employee
+            if record.challenge_id.xp_reward > 0:
+                record.employee_id.ecodoo_xp += record.challenge_id.xp_reward
+            # Award badge if configured
+            if record.challenge_id.badge_id:
+                existing = self.env['ecodoo.employee.badge'].search([
+                    ('employee_id', '=', record.employee_id.id),
+                    ('badge_id', '=', record.challenge_id.badge_id.id),
+                ], limit=1)
+                if not existing:
+                    self.env['ecodoo.employee.badge'].create({
+                        'employee_id': record.employee_id.id,
+                        'badge_id': record.challenge_id.badge_id.id,
+                        'awarded_at': fields.Datetime.now(),
+                        'source_participation_id': record.id,
+                        'company_id': record.company_id.id,
+                    })

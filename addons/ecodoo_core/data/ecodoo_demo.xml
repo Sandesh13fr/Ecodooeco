@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Demo Company -->
+        <record id="demo_company_greenroute" model="res.company">
+            <field name="name">GreenRoute Logistics Pvt Ltd</field>
+            <field name="street">100 Industrial Area</field>
+            <field name="city">Pune</field>
+            <field name="state_id" ref="base.state_in_mh"/>
+            <field name="country_id" ref="base.in"/>
+            <field name="phone">+91-20-12345678</field>
+            <field name="email">info@greenroute.example</field>
+        </record>
+
+        <!-- Demo Departments -->
+        <record id="demo_dept_logistics" model="hr.department">
+            <field name="name">Logistics</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <record id="demo_dept_operations" model="hr.department">
+            <field name="name">Operations</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <record id="demo_dept_people" model="hr.department">
+            <field name="name">People</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <record id="demo_dept_finance" model="hr.department">
+            <field name="name">Finance</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <!-- Demo Users -->
+        <record id="demo_user_alice" model="res.users">
+            <field name="name">Alice Manager</field>
+            <field name="login">alice@greenroute.example</field>
+            <field name="email">alice@greenroute.example</field>
+            <field name="password">demo</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+            <field name="company_ids" eval="[(4, ref('demo_company_greenroute'))]"/>
+            <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('ecodoo_core.group_ecodoo_manager'))]"/>
+        </record>
+
+        <record id="demo_user_bob" model="res.users">
+            <field name="name">Bob Employee</field>
+            <field name="login">bob@greenroute.example</field>
+            <field name="email">bob@greenroute.example</field>
+            <field name="password">demo</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+            <field name="company_ids" eval="[(4, ref('demo_company_greenroute'))]"/>
+            <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('ecodoo_core.group_ecodoo_employee'))]"/>
+        </record>
+
+        <record id="demo_user_carol" model="res.users">
+            <field name="name">Carol Employee</field>
+            <field name="login">carol@greenroute.example</field>
+            <field name="email">carol@greenroute.example</field>
+            <field name="password">demo</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+            <field name="company_ids" eval="[(4, ref('demo_company_greenroute'))]"/>
+            <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('ecodoo_core.group_ecodoo_employee'))]"/>
+        </record>
+
+        <record id="demo_user_dave" model="res.users">
+            <field name="name">Dave Employee</field>
+            <field name="login">dave@greenroute.example</field>
+            <field name="email">dave@greenroute.example</field>
+            <field name="password">demo</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+            <field name="company_ids" eval="[(4, ref('demo_company_greenroute'))]"/>
+            <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('ecodoo_core.group_ecodoo_employee'))]"/>
+        </record>
+
+        <!-- Demo Employees -->
+        <record id="demo_emp_alice" model="hr.employee">
+            <field name="name">Alice Manager</field>
+            <field name="user_id" ref="demo_user_alice"/>
+            <field name="department_id" ref="demo_dept_logistics"/>
+            <field name="company_id" ref="demo_company_greenroute"/>
+            <field name="work_email">alice@greenroute.example</field>
+        </record>
+
+        <record id="demo_emp_bob" model="hr.employee">
+            <field name="name">Bob Employee</field>
+            <field name="user_id" ref="demo_user_bob"/>
+            <field name="department_id" ref="demo_dept_logistics"/>
+            <field name="company_id" ref="demo_company_greenroute"/>
+            <field name="work_email">bob@greenroute.example</field>
+            <field name="ecodoo_xp">50</field>
+        </record>
+
+        <record id="demo_emp_carol" model="hr.employee">
+            <field name="name">Carol Employee</field>
+            <field name="user_id" ref="demo_user_carol"/>
+            <field name="department_id" ref="demo_dept_operations"/>
+            <field name="company_id" ref="demo_company_greenroute"/>
+            <field name="work_email">carol@greenroute.example</field>
+            <field name="ecodoo_xp">50</field>
+        </record>
+
+        <record id="demo_emp_dave" model="hr.employee">
+            <field name="name">Dave Employee</field>
+            <field name="user_id" ref="demo_user_dave"/>
+            <field name="department_id" ref="demo_dept_finance"/>
+            <field name="company_id" ref="demo_company_greenroute"/>
+            <field name="work_email">dave@greenroute.example</field>
+            <field name="ecodoo_xp">0</field>
+        </record>
+
+        <!-- Emission Factor: DIESEL-DEMO v1.0, 2.68 kgCO2e/L, approved -->
+        <record id="demo_factor_diesel" model="ecodoo.emission.factor">
+            <field name="name">Diesel Fuel (Demo)</field>
+            <field name="code">DIESEL-DEMO</field>
+            <field name="activity_type">fuel</field>
+            <field name="input_uom_id" ref="uom.product_uom_litre"/>
+            <field name="kg_co2e_per_unit">2.68</field>
+            <field name="version">1.0</field>
+            <field name="source_url">https://example.com/defra-diesel-2026</field>
+            <field name="valid_from">2026-01-01</field>
+            <field name="valid_to">2026-12-31</field>
+            <field name="state">approved</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <!-- Carbon Transaction: Logistics diesel, 120 L, expect 321.6 kgCO2e -->
+        <record id="demo_txn_logistics_diesel" model="ecodoo.carbon.transaction">
+            <field name="name">TXN-2026-001</field>
+            <field name="activity_date">2026-07-12</field>
+            <field name="department_id" ref="demo_dept_logistics"/>
+            <field name="activity_type">fuel</field>
+            <field name="quantity">120.0</field>
+            <field name="uom_id" ref="uom.product_uom_litre"/>
+            <field name="factor_id" ref="demo_factor_diesel"/>
+            <field name="source_reference">Fleet log #FL-2026-0712</field>
+            <field name="state">posted</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <!-- Goal: Logistics monthly target 300 kgCO2e (will show at_risk after seed transaction posts) -->
+        <record id="demo_goal_logistics_july" model="ecodoo.goal">
+            <field name="name">Logistics July Target</field>
+            <field name="department_id" ref="demo_dept_logistics"/>
+            <field name="period_start">2026-07-01</field>
+            <field name="period_end">2026-07-31</field>
+            <field name="target_kg_co2e">300.0</field>
+            <field name="state">active</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <!-- Policy: Sustainable Operations Policy v1.0, published, 3 of 4 employees acknowledged -->
+        <record id="demo_policy_sustainable_ops" model="ecodoo.policy">
+            <field name="name">Sustainable Operations Policy</field>
+            <field name="code">SOP</field>
+            <field name="version">1.0</field>
+            <field name="body"><![CDATA[
+                <p>All operations must minimize environmental impact through fuel efficiency, waste reduction, and energy conservation.</p>
+                <ul>
+                    <li>Track all fuel consumption</li>
+                    <li>Report emissions monthly</li>
+                    <li>Participate in sustainability challenges</li>
+                </ul>
+            ]]></field>
+            <field name="owner_id" ref="demo_user_alice"/>
+            <field name="effective_date">2026-01-01</field>
+            <field name="review_date">2026-12-31</field>
+            <field name="state">published</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <!-- Policy Acknowledgements: 3 of 4 employees acknowledged -->
+        <record id="demo_ack_alice" model="ecodoo.policy.acknowledgement">
+            <field name="policy_id" ref="demo_policy_sustainable_ops"/>
+            <field name="employee_id" ref="demo_emp_alice"/>
+            <field name="acknowledged_at">2026-07-01 09:00:00</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <record id="demo_ack_bob" model="ecodoo.policy.acknowledgement">
+            <field name="policy_id" ref="demo_policy_sustainable_ops"/>
+            <field name="employee_id" ref="demo_emp_bob"/>
+            <field name="acknowledged_at">2026-07-02 10:00:00</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <record id="demo_ack_carol" model="ecodoo.policy.acknowledgement">
+            <field name="policy_id" ref="demo_policy_sustainable_ops"/>
+            <field name="employee_id" ref="demo_emp_carol"/>
+            <field name="acknowledged_at">2026-07-03 11:00:00</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <!-- Compliance Issues: 1 resolved, 1 open -->
+        <record id="demo_issue_open" model="ecodoo.compliance.issue">
+            <field name="name">Missing fuel receipts for June</field>
+            <field name="severity">medium</field>
+            <field name="description">Several fleet fuel purchases in June lack supporting receipts.</field>
+            <field name="owner_id" ref="demo_user_alice"/>
+            <field name="due_date">2026-08-15</field>
+            <field name="state">open</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <record id="demo_issue_resolved" model="ecodoo.compliance.issue">
+            <field name="name">Expired emission factor used in Q1</field>
+            <field name="severity">high</field>
+            <field name="description">Q1 report used diesel factor expired Dec 2025.</field>
+            <field name="owner_id" ref="demo_user_alice"/>
+            <field name="due_date">2026-06-30</field>
+            <field name="resolution">Recalculated Q1 with valid factor. Report reissued.</field>
+            <field name="state">resolved</field>
+            <field name="resolved_at">2026-06-28 16:00:00</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <!-- Challenge: Car-Free Commute, 50 XP, active, 2 approved participations -->
+        <record id="demo_challenge_carfree" model="ecodoo.challenge">
+            <field name="name">Car-Free Commute</field>
+            <field name="description">Commute without a car for 10 days in July. Walk, cycle, or use public transport.</field>
+            <field name="start_date">2026-07-01</field>
+            <field name="end_date">2026-07-31</field>
+            <field name="xp_reward">50</field>
+            <field name="badge_id" ref="demo_badge_eco_starter"/>
+            <field name="state">active</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <!-- Challenge Participations: 2 approved across distinct employees -->
+        <record id="demo_part_bob" model="ecodoo.challenge.participation">
+            <field name="challenge_id" ref="demo_challenge_carfree"/>
+            <field name="employee_id" ref="demo_emp_bob"/>
+            <field name="proof_note">Cycled to work 12 days in July. Strava logs attached.</field>
+            <field name="state">approved</field>
+            <field name="approved_by" ref="demo_user_alice"/>
+            <field name="approved_at">2026-07-15 10:00:00</field>
+            <field name="xp_awarded">True</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <record id="demo_part_carol" model="ecodoo.challenge.participation">
+            <field name="challenge_id" ref="demo_challenge_carfree"/>
+            <field name="employee_id" ref="demo_emp_carol"/>
+            <field name="proof_note">Used metro + walk for 14 days. Tickets saved.</field>
+            <field name="state">approved</field>
+            <field name="approved_by" ref="demo_user_alice"/>
+            <field name="approved_at">2026-07-18 14:30:00</field>
+            <field name="xp_awarded">True</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <!-- Badge: Eco Starter, xp_threshold 50 -->
+        <record id="demo_badge_eco_starter" model="ecodoo.badge">
+            <field name="name">Eco Starter</field>
+            <field name="description">Completed first sustainability challenge</field>
+            <field name="xp_threshold">50</field>
+            <field name="active">True</field>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <!-- Employee Badges from challenge awards -->
+        <record id="demo_emp_badge_bob" model="ecodoo.employee.badge">
+            <field name="employee_id" ref="demo_emp_bob"/>
+            <field name="badge_id" ref="demo_badge_eco_starter"/>
+            <field name="awarded_at">2026-07-15 10:00:00</field>
+            <field name="source_participation_id" ref="demo_part_bob"/>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+
+        <record id="demo_emp_badge_carol" model="ecodoo.employee.badge">
+            <field name="employee_id" ref="demo_emp_carol"/>
+            <field name="badge_id" ref="demo_badge_eco_starter"/>
+            <field name="awarded_at">2026-07-18 14:30:00</field>
+            <field name="source_participation_id" ref="demo_part_carol"/>
+            <field name="company_id" ref="demo_company_greenroute"/>
+        </record>
+    </data>
+</odoo>

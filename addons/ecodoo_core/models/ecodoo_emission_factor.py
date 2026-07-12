@@ -1,0 +1,139 @@
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError, UserError
+
+
+class EcodooEmissionFactor(models.Model):
+    _name = 'ecodoo.emission.factor'
+    _description = 'Emission Factor'
+    _order = 'code, version desc'
+    _rec_name = 'display_name'
+
+    name = fields.Char(required=True, translate=True)
+    code = fields.Char(required=True, index=True)
+    activity_type = fields.Selection(
+        selection=[
+            ('fuel', 'Fuel'),
+            ('electricity', 'Electricity'),
+            ('travel', 'Travel'),
+            ('waste', 'Waste'),
+        ],
+        required=True,
+    )
+    input_uom_id = fields.Many2one(
+        'uom.uom',
+        string='Input UoM',
+        required=True,
+        domain="[('category_id', '=', uom_category_id)]",
+    )
+    uom_category_id = fields.Many2one(
+        'uom.category',
+        related='input_uom_id.category_id',
+        store=True,
+        readonly=True,
+    )
+    kg_co2e_per_unit = fields.Float(
+        string='kg CO2e per Unit',
+        required=True,
+        digits=(16, 6),
+        help='Emission factor in kg CO2e per input UoM',
+    )
+    version = fields.Char(required=True, default='1.0')
+    source_url = fields.Char(string='Source URL')
+    valid_from = fields.Date()
+    valid_to = fields.Date()
+    state = fields.Selection(
+        selection=[
+            ('draft', 'Draft'),
+            ('approved', 'Approved'),
+            ('archived', 'Archived'),
+        ],
+        default='draft',
+        required=True,
+    )
+    company_id = fields.Many2one(
+        'res.company',
+        required=True,
+        default=lambda self: self.env.company,
+    )
+    display_name = fields.Char(compute='_compute_display_name', store=True)
+
+    _sql_constraints = [
+        ('code_version_company_unique',
+         'UNIQUE(code, version, company_id)',
+         'Factor code, version, and company must be unique.'),
+        ('kg_co2e_positive',
+         'CHECK(kg_co2e_per_unit > 0)',
+         'Emission factor must be positive.'),
+    ]
+
+    @api.depends('name', 'code', 'version')
+    def _compute_display_name(self):
+        for record in self:
+            record.display_name = f'{record.name} ({record.code} v{record.version})'
+
+    @api.constrains('valid_from', 'valid_to')
+    def _check_validity_dates(self):
+        for record in self:
+            if record.valid_from and record.valid_to and record.valid_from > record.valid_to:
+                raise ValidationError(_('Valid from date must be before valid to date.'))
+
+    def action_approve(self):
+        for record in self:
+            if record.state != 'draft':
+                raise UserError(_('Can only approve from Draft state.'))
+            if not record.kg_co2e_per_unit or record.kg_co2e_per_unit <= 0:
+                raise UserError(_('Emission factor must be positive.'))
+            if not record.input_uom_id:
+                raise UserError(_('Input UoM is required.'))
+            record.state = 'approved'
+
+    def action_archive(self):
+        for record in self:
+            if record.state != 'approved':
+                raise UserError(_('Can only archive from Approved state.'))
+            record.state = 'archived'
+
+    def action_reset_to_draft(self):
+        for record in self:
+            if record.state != 'draft':
+                raise UserError(_('Can only reset to draft from Draft state (archived factors cannot be reset).'))
+            record.state = 'draft'
+
+    @api.constrains('state', 'code', 'kg_co2e_per_unit', 'input_uom_id', 'version', 'source_url', 'valid_from', 'valid_to')
+    def _check_approved_immutable(self):
+        for record in self:
+            if record.state == 'approved' and record._origin.state == 'approved':
+                changed_fields = []
+                for field_name in ['code', 'kg_co2e_per_unit', 'input_uom_id', 'version', 'source_url', 'valid_from', 'valid_to']:
+                    if record[field_name] != record._origin[field_name]:
+                        changed_fields.append(field_name)
+                if changed_fields:
+                    raise ValidationError(_(
+                        'Approved factors are immutable. Cannot change: %s',
+                        ', '.join(changed_fields)
+                    ))
+
+    @api.model
+    def _get_approved_factor_domain(self, company_id, activity_type, activity_date):
+        domain = [
+            ('state', '=', 'approved'),
+            ('company_id', '=', company_id),
+            ('activity_type', '=', activity_type),
+        ]
+        if activity_date:
+            domain += [
+                '|', ('valid_from', '=', False), ('valid_from', '<=', activity_date),
+                '|', ('valid_to', '=', False), ('valid_to', '>=', activity_date),
+            ]
+        return domain
+
+    def name_get(self):
+        return [(r.id, f'{r.name} ({r.code} v{r.version})') for r in self]
+
+    @api.model
+    def _name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):
+        args = args or []
+        domain = []
+        if name:
+            domain = ['|', ('name', operator, name), ('code', operator, name)]
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)

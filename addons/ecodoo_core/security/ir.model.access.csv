@@ -1,0 +1,40 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ecodoo_emission_factor_user,ecodoo.emission.factor user,model_ecodoo_emission_factor,group_ecodoo_employee,1,0,0,0
+access_ecodoo_emission_factor_manager,ecodoo.emission.factor manager,model_ecodoo_emission_factor,group_ecodoo_manager,1,1,1,1
+access_ecodoo_emission_factor_executive,ecodoo.emission.factor executive,model_ecodoo_emission_factor,group_ecodoo_executive,1,0,0,0
+
+access_ecodoo_carbon_transaction_user,ecodoo.carbon.transaction user,model_ecodoo_carbon_transaction,group_ecodoo_employee,1,0,0,0
+access_ecodoo_carbon_transaction_manager,ecodoo.carbon.transaction manager,model_ecodoo_carbon_transaction,group_ecodoo_manager,1,1,1,1
+access_ecodoo_carbon_transaction_executive,ecodoo.carbon.transaction executive,model_ecodoo_carbon_transaction,group_ecodoo_executive,1,0,0,0
+
+access_ecodoo_goal_user,ecodoo.goal user,model_ecodoo_goal,group_ecodoo_employee,1,0,0,0
+access_ecodoo_goal_manager,ecodoo.goal manager,model_ecodoo_goal,group_ecodoo_manager,1,1,1,1
+access_ecodoo_goal_executive,ecodoo.goal executive,model_ecodoo_goal,group_ecodoo_executive,1,0,0,0
+
+access_ecodoo_policy_user,ecodoo.policy user,model_ecodoo_policy,group_ecodoo_employee,1,0,0,0
+access_ecodoo_policy_manager,ecodoo.policy manager,model_ecodoo_policy,group_ecodoo_manager,1,1,1,1
+access_ecodoo_policy_executive,ecodoo.policy executive,model_ecodoo_policy,group_ecodoo_executive,1,0,0,0
+
+access_ecodoo_policy_acknowledgement_user,ecodoo.policy.acknowledgement user,model_ecodoo_policy_acknowledgement,group_ecodoo_employee,1,0,0,0
+access_ecodoo_policy_acknowledgement_manager,ecodoo.policy.acknowledgement manager,model_ecodoo_policy_acknowledgement,group_ecodoo_manager,1,1,1,1
+access_ecodoo_policy_acknowledgement_executive,ecodoo.policy.acknowledgement executive,model_ecodoo_policy_acknowledgement,group_ecodoo_executive,1,0,0,0
+
+access_ecodoo_compliance_issue_user,ecodoo.compliance.issue user,model_ecodoo_compliance_issue,group_ecodoo_employee,1,0,0,0
+access_ecodoo_compliance_issue_manager,ecodoo.compliance.issue manager,model_ecodoo_compliance_issue,group_ecodoo_manager,1,1,1,1
+access_ecodoo_compliance_issue_executive,ecodoo.compliance.issue executive,model_ecodoo_compliance_issue,group_ecodoo_executive,1,0,0,0
+
+access_ecodoo_challenge_user,ecodoo.challenge user,model_ecodoo_challenge,group_ecodoo_employee,1,0,0,0
+access_ecodoo_challenge_manager,ecodoo.challenge manager,model_ecodoo_challenge,group_ecodoo_manager,1,1,1,1
+access_ecodoo_challenge_executive,ecodoo.challenge executive,model_ecodoo_challenge,group_ecodoo_executive,1,0,0,0
+
+access_ecodoo_challenge_participation_user,ecodoo.challenge.participation user,model_ecodoo_challenge_participation,group_ecodoo_employee,1,0,0,0
+access_ecodoo_challenge_participation_manager,ecodoo.challenge.participation manager,model_ecodoo_challenge_participation,group_ecodoo_manager,1,1,1,1
+access_ecodoo_challenge_participation_executive,ecodoo.challenge.participation executive,model_ecodoo_challenge_participation,group_ecodoo_executive,1,0,0,0
+
+access_ecodoo_badge_user,ecodoo.badge user,model_ecodoo_badge,group_ecodoo_employee,1,0,0,0
+access_ecodoo_badge_manager,ecodoo.badge manager,model_ecodoo_badge,group_ecodoo_manager,1,1,1,1
+access_ecodoo_badge_executive,ecodoo.badge executive,model_ecodoo_badge,group_ecodoo_executive,1,0,0,0
+
+access_ecodoo_employee_badge_user,ecodoo.employee.badge user,model_ecodoo_employee_badge,group_ecodoo_employee,1,0,0,0
+access_ecodoo_employee_badge_manager,ecodoo.employee.badge manager,model_ecodoo_employee_badge,group_ecodoo_manager,1,1,1,1
+access_ecodoo_employee_badge_executive,ecodoo.employee.badge executive,model_ecodoo_employee_badge,group_ecodoo_executive,1,0,0,0

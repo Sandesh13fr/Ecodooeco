@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Goal Views -->
+        <record id="view_ecodoo_goal_form" model="ir.ui.view">
+            <field name="name">ecodoo.goal.form</field>
+            <field name="model">ecodoo.goal</field>
+            <field name="arch" type="xml">
+                <form string="Emission Goal">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,active,closed"/>
+                        <field name="status" widget="statusbar" statusbar_visible="on_track,at_risk,off_track" options="{'clickable': '0'}"/>
+                        <button name="action_activate" string="Activate" type="object" class="btn-primary" invisible="state != 'draft'" groups="ecodoo_core.group_ecodoo_manager"/>
+                        <button name="action_close" string="Close" type="object" class="btn-secondary" invisible="state != 'active'" groups="ecodoo_core.group_ecodoo_manager"/>
+                        <button name="action_reset_to_draft" string="Reset to Draft" type="object" class="btn-secondary" invisible="state != 'draft'" groups="ecodoo_core.group_ecodoo_manager"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_activate" string="Activate" type="object" class="oe_stat_button" icon="fa-play" invisible="state != 'draft'" groups="ecodoo_core.group_ecodoo_manager"/>
+                            <button name="action_close" string="Close" type="object" class="oe_stat_button" icon="fa-check" invisible="state != 'active'" groups="ecodoo_core.group_ecodoo_manager"/>
+                            <button name="recompute_actuals" string="Recalculate" type="object" class="oe_stat_button" icon="fa-refresh" groups="ecodoo_core.group_ecodoo_manager"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="department_id" options="{'no_create': True}"/>
+                                <field name="period_start"/>
+                                <field name="period_end"/>
+                            </group>
+                            <group>
+                                <field name="target_kg_co2e"/>
+                                <field name="actual_kg_co2e" readonly="1"/>
+                                <field name="progress_percent" readonly="1" widget="progressbar" options="{'max_value': 100, 'editable': False}"/>
+                                <field name="company_id" options="{'no_create': True}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_goal_tree" model="ir.ui.view">
+            <field name="name">ecodoo.goal.tree</field>
+            <field name="model">ecodoo.goal</field>
+            <field name="arch" type="xml">
+                <tree string="Emission Goals" decoration-success="status == 'on_track'" decoration-warning="status == 'at_risk'" decoration-danger="status == 'off_track'">
+                    <field name="name"/>
+                    <field name="department_id"/>
+                    <field name="period_start"/>
+                    <field name="period_end"/>
+                    <field name="target_kg_co2e"/>
+                    <field name="actual_kg_co2e"/>
+                    <field name="progress_percent" widget="progressbar" options="{'max_value': 200, 'editable': False}"/>
+                    <field name="status"/>
+                    <field name="state"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_ecodoo_goal_search" model="ir.ui.view">
+            <field name="name">ecodoo.goal.search</field>
+            <field name="model">ecodoo.goal</field>
+            <field name="arch" type="xml">
+                <search string="Emission Goals">
+                    <field name="name" string="Name"/>
+                    <field name="department_id" string="Department"/>
+                    <filter name="active" string="Active" domain="[('state', '=', 'active')]"/>
+                    <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                    <filter name="closed" string="Closed" domain="[('state', '=', 'closed')]"/>
+                    <filter name="on_track" string="On Track" domain="[('status', '=', 'on_track')]"/>
+                    <filter name="at_risk" string="At Risk" domain="[('status', '=', 'at_risk')]"/>
+                    <filter name="off_track" string="Off Track" domain="[('status', '=', 'off_track')]"/>
+                    <group string="Group By">
+                        <filter name="by_department" string="Department" domain="[]" context="{'group_by': 'department_id'}"/>
+                        <filter name="by_state" string="State" domain="[]" context="{'group_by': 'state'}"/>
+                        <filter name="by_status" string="Status" domain="[]" context="{'group_by': 'status'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_ecodoo_goal" model="ir.actions.act_window">
+            <field name="name">Emission Goals</field>
+            <field name="res_model">ecodoo.goal</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_ecodoo_goal_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Create your first emission reduction goal</p>
+                <p>Set targets for departments and track progress against posted carbon transactions.</p>
+            </field>
+        </record>
+    </data>
+</odoo>
