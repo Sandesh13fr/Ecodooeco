@@ -20,6 +20,11 @@ Open `/app` for the judge-ready MVP surface. The landing page CTA routes there.
 6. `/app/summary` — printable ESG summary
 
 Append `?role=employee`, `?role=manager`, or `?role=executive` to show role-scoped presentation states.
+Append `?state=loading`, `?state=empty`, or `?state=error` to inspect defensive data states.
+
+On narrow screens, the route list becomes a native page selector so task content remains above the
+fold. The landing evidence section and Command Center use compressed generated graphics from
+`public/graphics/`; both retain explicit alternative text.
 
 ## Demo/fallback data
 
@@ -42,11 +47,11 @@ npm run test:unit -- --run
 npm run build
 ```
 
-All passed during handoff. Vitest prints jsdom `window.scrollTo()` warnings from router scrolling; the tests still pass.
+All passed during handoff. Vitest prints jsdom `window.scrollTo()` and media playback warnings; the tests still pass.
 
 ## Limitations
 
 - Fixtures only; live backend integration not verified.
 - Print layout is CSS-supported but browser print preview was not manually checked.
-- Screenshots were not captured in this environment.
+- Desktop and 390px mobile Command Center layouts were checked in the local browser.
 - The ESG summary is for internal demo/management only, not assurance, certification, or proof of regulatory compliance.

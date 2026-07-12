@@ -7,6 +7,7 @@ import { demoData, goalProgress, navItems, roles, type PageKey, type Role } from
 
 const route = useRoute()
 const router = useRouter()
+const evidencePathGraphic = '/graphics/evidence-path.webp'
 const pageKeys = navItems.map((item) => item.page)
 
 const currentPage = computed<PageKey>(() => {
@@ -276,6 +277,15 @@ function printSummary() {
                 </article>
 
                 <article class="rounded-xl border border-navy/10 p-5">
+                  <img
+                    :src="evidencePathGraphic"
+                    alt="Four connected paper records representing source, factor, calculation, and verified ledger evidence"
+                    width="960"
+                    height="540"
+                    class="mb-5 aspect-[16/9] w-full rounded-lg object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <h2 class="text-xl font-semibold text-navy">Review next</h2>
                   <ul class="mt-4 space-y-3 text-sm text-muted">
                     <li>

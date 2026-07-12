@@ -2,6 +2,8 @@
 import PageContainer from '../layout/PageContainer.vue'
 import FadeIn from '../motion/FadeIn.vue'
 
+const evidenceLedgerGraphic = '/graphics/evidence-ledger.webp'
+
 const steps = [
   {
     num: '01',
@@ -66,6 +68,22 @@ const steps = [
           time, and destination needed to reproduce it — without exception.
         </p>
       </div>
+
+      <figure class="mt-10 overflow-hidden rounded-xl bg-navy-mid">
+        <img
+          :src="evidenceLedgerGraphic"
+          alt="An operational record, measurement instrument, and calculation receipt connected as one evidence trail"
+          width="1200"
+          height="800"
+          class="max-h-[30rem] w-full object-cover"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="px-5 py-3 text-sm text-white/70">
+          The evidence starts with the operational record—not a disconnected sustainability
+          spreadsheet.
+        </figcaption>
+      </figure>
 
       <!-- Steps Flow -->
       <FadeIn class="mt-16">
