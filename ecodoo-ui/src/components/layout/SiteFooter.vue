@@ -8,9 +8,17 @@ import PageContainer from './PageContainer.vue'
       <div class="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
         <!-- Brand -->
         <div class="flex items-center gap-3">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal/20 ring-1 ring-teal/30">
+          <div
+            class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal/20 ring-1 ring-teal/30"
+          >
             <svg class="h-4 w-4 text-teal" viewBox="0 0 16 16" fill="none">
-              <path d="M8 2L2 6v8h4v-4h4v4h4V6L8 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="rgba(0,201,177,0.2)"/>
+              <path
+                d="M8 2L2 6v8h4v-4h4v4h4V6L8 2z"
+                stroke="currentColor"
+                stroke-width="1.2"
+                stroke-linejoin="round"
+                fill="rgba(0,201,177,0.2)"
+              />
             </svg>
           </div>
           <div>

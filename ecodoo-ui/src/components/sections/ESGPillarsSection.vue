@@ -45,7 +45,10 @@ const pillars = [
   <section id="pillars" class="relative overflow-hidden bg-white py-24 sm:py-32">
     <!-- Subtle background -->
     <div class="pointer-events-none absolute inset-0" aria-hidden="true">
-      <div class="absolute inset-0" style="background: linear-gradient(180deg, #f0faf8 0%, #ffffff 40%)"></div>
+      <div
+        class="absolute inset-0"
+        style="background: linear-gradient(180deg, #f0faf8 0%, #ffffff 40%)"
+      ></div>
     </div>
 
     <PageContainer class="relative">
@@ -76,19 +79,28 @@ const pillars = [
           <!-- Glow on hover -->
           <div
             class="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-            :style="{ boxShadow: `0 0 50px ${pillar.accentGlow}, inset 0 1px 0 rgba(255,255,255,0.3)` }"
+            :style="{
+              boxShadow: `0 0 50px ${pillar.accentGlow}, inset 0 1px 0 rgba(255,255,255,0.3)`,
+            }"
           ></div>
 
           <!-- Letter Badge -->
           <div
             class="relative mb-6 inline-flex h-12 w-12 items-center justify-center rounded-xl text-xl font-black"
-            :style="{ background: pillar.accentBg, border: `1px solid ${pillar.accentBorder}`, color: pillar.accentText }"
+            :style="{
+              background: pillar.accentBg,
+              border: `1px solid ${pillar.accentBorder}`,
+              color: pillar.accentText,
+            }"
           >
             {{ pillar.key }}
           </div>
 
           <!-- Content -->
-          <p class="relative text-xs font-bold uppercase tracking-widest" :style="{ color: pillar.accentText }">
+          <p
+            class="relative text-xs font-bold uppercase tracking-widest"
+            :style="{ color: pillar.accentText }"
+          >
             {{ pillar.label }}
           </p>
           <h3 class="relative mt-3 text-xl font-bold text-[#0a1628]">{{ pillar.headline }}</h3>
@@ -101,8 +113,19 @@ const pillars = [
               :key="item"
               class="flex items-center gap-2.5 text-sm text-[#475569]"
             >
-              <svg class="h-4 w-4 shrink-0" :style="{ color: pillar.accentText }" viewBox="0 0 16 16" fill="none">
-                <path d="M3 8l3.5 3.5L13 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg
+                class="h-4 w-4 shrink-0"
+                :style="{ color: pillar.accentText }"
+                viewBox="0 0 16 16"
+                fill="none"
+              >
+                <path
+                  d="M3 8l3.5 3.5L13 4.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
               {{ item }}
             </li>
@@ -112,9 +135,17 @@ const pillars = [
 
       <!-- Bottom connector -->
       <div class="mt-16 flex items-center justify-center gap-4">
-        <div class="h-px flex-1" style="background: linear-gradient(to right, transparent, rgba(0,201,177,0.3))"></div>
-        <span class="text-sm font-medium text-[#64748b]">All connected in one Odoo add-on suite</span>
-        <div class="h-px flex-1" style="background: linear-gradient(to left, transparent, rgba(0,201,177,0.3))"></div>
+        <div
+          class="h-px flex-1"
+          style="background: linear-gradient(to right, transparent, rgba(0, 201, 177, 0.3))"
+        ></div>
+        <span class="text-sm font-medium text-[#64748b]"
+          >All connected in one Odoo add-on suite</span
+        >
+        <div
+          class="h-px flex-1"
+          style="background: linear-gradient(to left, transparent, rgba(0, 201, 177, 0.3))"
+        ></div>
       </div>
     </PageContainer>
   </section>

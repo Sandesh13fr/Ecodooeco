@@ -27,21 +27,35 @@ import PageContainer from '../layout/PageContainer.vue'
             ESG operations live where the work already happens
           </h2>
           <p class="mt-5 text-base leading-7 text-white/60">
-            Fleet, purchase, expense, people, and governance records become one connected
-            evidence model — inside Odoo, without a parallel database.
+            Fleet, purchase, expense, people, and governance records become one connected evidence
+            model — inside Odoo, without a parallel database.
           </p>
 
           <dl class="mt-10 space-y-0 divide-y divide-white/8">
             <div
               v-for="item in [
-                { label: 'Capture once', desc: 'Approved operational records stay the source of truth.', icon: '→' },
-                { label: 'Calculate transparently', desc: 'Units, conversions, factors, and versions remain visible.', icon: '÷' },
-                { label: 'Act with context', desc: 'Results connect directly to targets, issues, and reports.', icon: '↗' },
+                {
+                  label: 'Capture once',
+                  desc: 'Approved operational records stay the source of truth.',
+                  icon: '→',
+                },
+                {
+                  label: 'Calculate transparently',
+                  desc: 'Units, conversions, factors, and versions remain visible.',
+                  icon: '÷',
+                },
+                {
+                  label: 'Act with context',
+                  desc: 'Results connect directly to targets, issues, and reports.',
+                  icon: '↗',
+                },
               ]"
               :key="item.label"
               class="group flex gap-5 py-5 transition-all duration-300 hover:border-teal/20"
             >
-              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-teal/20 bg-teal/8 text-base font-bold text-teal transition-all group-hover:border-teal/40 group-hover:bg-teal/15">
+              <div
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-teal/20 bg-teal/8 text-base font-bold text-teal transition-all group-hover:border-teal/40 group-hover:bg-teal/15"
+              >
                 {{ item.icon }}
               </div>
               <div>
@@ -53,9 +67,13 @@ import PageContainer from '../layout/PageContainer.vue'
         </div>
 
         <!-- Right: Product Preview Card -->
-        <div class="overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-[0_24px_80px_rgba(0,0,0,0.4)] backdrop-blur-sm card-hover">
+        <div
+          class="overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-[0_24px_80px_rgba(0,0,0,0.4)] backdrop-blur-sm card-hover"
+        >
           <!-- Card Header -->
-          <div class="flex items-center justify-between border-b border-white/8 bg-white/5 px-6 py-4">
+          <div
+            class="flex items-center justify-between border-b border-white/8 bg-white/5 px-6 py-4"
+          >
             <div class="flex items-center gap-3">
               <div class="flex gap-1.5">
                 <div class="h-3 w-3 rounded-full bg-red-500/80"></div>
@@ -64,7 +82,10 @@ import PageContainer from '../layout/PageContainer.vue'
               </div>
               <span class="text-sm font-semibold text-white">Ecodoo · Environmental Ledger</span>
             </div>
-            <span class="rounded-full border border-teal/30 bg-teal/10 px-2.5 py-0.5 text-xs font-medium text-teal">Q2 2026</span>
+            <span
+              class="rounded-full border border-teal/30 bg-teal/10 px-2.5 py-0.5 text-xs font-medium text-teal"
+              >Q2 2026</span
+            >
           </div>
 
           <!-- Card Body -->
@@ -86,9 +107,27 @@ import PageContainer from '../layout/PageContainer.vue'
               <div class="mt-6 space-y-0 divide-y divide-white/8">
                 <div
                   v-for="row in [
-                    { id: 'PO-2026-0418', category: 'Fleet fuel', status: 'Ready for review', color: 'text-teal', dot: 'bg-teal' },
-                    { id: 'EXP-2026-0881', category: 'Rail travel', status: 'Factor needed', color: 'text-yellow-400', dot: 'bg-yellow-400' },
-                    { id: 'FLT-2026-0062', category: 'Vehicle distance', status: 'Approved', color: 'text-green-400', dot: 'bg-green-400' },
+                    {
+                      id: 'PO-2026-0418',
+                      category: 'Fleet fuel',
+                      status: 'Ready for review',
+                      color: 'text-teal',
+                      dot: 'bg-teal',
+                    },
+                    {
+                      id: 'EXP-2026-0881',
+                      category: 'Rail travel',
+                      status: 'Factor needed',
+                      color: 'text-yellow-400',
+                      dot: 'bg-yellow-400',
+                    },
+                    {
+                      id: 'FLT-2026-0062',
+                      category: 'Vehicle distance',
+                      status: 'Approved',
+                      color: 'text-green-400',
+                      dot: 'bg-green-400',
+                    },
                   ]"
                   :key="row.id"
                   class="flex items-center justify-between gap-4 py-3.5 text-sm"

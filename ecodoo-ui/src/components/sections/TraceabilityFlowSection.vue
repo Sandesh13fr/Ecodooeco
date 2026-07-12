@@ -42,7 +42,10 @@ const steps = [
 </script>
 
 <template>
-  <section id="traceability" class="relative overflow-hidden bg-[#0a1628] py-24 text-white sm:py-32">
+  <section
+    id="traceability"
+    class="relative overflow-hidden bg-[#0a1628] py-24 text-white sm:py-32"
+  >
     <!-- Background orb -->
     <div class="pointer-events-none absolute inset-0" aria-hidden="true">
       <div
@@ -80,7 +83,9 @@ const steps = [
             <!-- Number -->
             <span class="text-xs font-bold text-teal/60">{{ step.num }}</span>
             <!-- Label -->
-            <p class="mt-2 text-xs font-semibold uppercase tracking-widest text-teal">{{ step.label }}</p>
+            <p class="mt-2 text-xs font-semibold uppercase tracking-widest text-teal">
+              {{ step.label }}
+            </p>
             <!-- Title -->
             <p class="mt-3 font-semibold text-white">{{ step.title }}</p>
             <!-- Detail -->
@@ -90,7 +95,9 @@ const steps = [
             <div
               v-if="index < steps.length - 1"
               class="absolute -right-3 top-1/2 z-10 hidden -translate-y-1/2 lg:flex h-6 w-6 items-center justify-center rounded-full border border-teal/30 bg-[#0a1628] text-xs text-teal"
-            >→</div>
+            >
+              →
+            </div>
           </div>
         </div>
       </FadeIn>
@@ -105,35 +112,45 @@ const steps = [
                 <p class="text-xs font-medium text-[#64748b]">Odoo Purchase</p>
                 <h3 class="mt-1 text-xl font-bold text-[#0a1628]">Fuel delivery</h3>
               </div>
-              <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+              <span
+                class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700"
+              >
                 Approved
               </span>
             </div>
             <dl class="grid gap-5 text-sm sm:grid-cols-2">
-              <div v-for="field in [
-                ['Record', 'PO-2026-0418', true],
-                ['Company', 'Ecodoo Demo Ltd', false],
-                ['Quantity', '2,400 L', true],
-                ['Recorded', '18 Apr 2026', true],
-              ]" :key="field[0]">
+              <div
+                v-for="field in [
+                  ['Record', 'PO-2026-0418', true],
+                  ['Company', 'Ecodoo Demo Ltd', false],
+                  ['Quantity', '2,400 L', true],
+                  ['Recorded', '18 Apr 2026', true],
+                ]"
+                :key="field[0]"
+              >
                 <dt class="text-xs font-medium text-[#94a3b8]">{{ field[0] }}</dt>
-                <dd class="mt-1" :class="field[2] ? 'font-mono text-[#0a1628]' : 'font-medium text-[#0a1628]'">{{ field[1] }}</dd>
+                <dd
+                  class="mt-1"
+                  :class="field[2] ? 'font-mono text-[#0a1628]' : 'font-medium text-[#0a1628]'"
+                >
+                  {{ field[1] }}
+                </dd>
               </div>
             </dl>
           </div>
 
           <!-- Right: Calculation detail -->
           <div class="p-8">
-            <p class="text-xs font-semibold uppercase tracking-widest text-teal">Calculation evidence</p>
+            <p class="text-xs font-semibold uppercase tracking-widest text-teal">
+              Calculation evidence
+            </p>
 
             <div class="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-2 font-mono">
               <span class="text-lg text-[#0a1628]">2,400 L</span>
               <span class="text-[#94a3b8]" aria-hidden="true">×</span>
               <span class="text-lg text-[#0a1628]">2.512 kgCO₂e/L</span>
               <span class="text-[#94a3b8]" aria-hidden="true">=</span>
-              <strong class="text-2xl font-black leading-tight text-teal">
-                6,028.80 kgCO₂e
-              </strong>
+              <strong class="text-2xl font-black leading-tight text-teal"> 6,028.80 kgCO₂e </strong>
             </div>
             <p class="mt-1 text-xs text-[#94a3b8]">illustrative result</p>
 
@@ -148,7 +165,9 @@ const steps = [
                 class="flex flex-wrap justify-between gap-4 py-3"
               >
                 <dt class="text-[#94a3b8]">{{ item[0] }}</dt>
-                <dd :class="item[2] ? 'font-mono text-[#0a1628]' : 'font-medium text-green-600'">{{ item[1] }}</dd>
+                <dd :class="item[2] ? 'font-mono text-[#0a1628]' : 'font-medium text-green-600'">
+                  {{ item[1] }}
+                </dd>
               </div>
             </dl>
           </div>

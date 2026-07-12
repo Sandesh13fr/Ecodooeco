@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import PageContainer from '../components/layout/PageContainer.vue'
 import BaseButton from '../components/ui/BaseButton.vue'
 import { demoData, goalProgress, navItems, roles, type PageKey, type Role } from '../data/demoMvp'
 
 const route = useRoute()
+const router = useRouter()
 const pageKeys = navItems.map((item) => item.page)
 
 const currentPage = computed<PageKey>(() => {
@@ -48,6 +49,10 @@ function routeFor(page: PageKey, selectedRole = role.value, state = dataState.va
   }
 }
 
+function changePage(event: Event) {
+  router.push(routeFor((event.target as HTMLSelectElement).value as PageKey))
+}
+
 function statusClass(status: string) {
   if (['approved', 'calculated', 'Resolved'].includes(status)) return 'bg-green/15 text-green-ink'
   if (['at_risk', 'Open', 'High'].includes(status)) return 'bg-gold/20 text-gold-ink'
@@ -86,22 +91,36 @@ function printSummary() {
 
       <div class="mt-6 grid gap-6 lg:grid-cols-[17rem_1fr]">
         <aside class="no-print rounded-xl bg-white p-3">
-          <p class="px-3 py-2 text-sm font-semibold text-muted">Demo navigation</p>
-          <nav class="grid gap-1" aria-label="MVP demo">
-            <RouterLink
-              v-for="item in visibleNav"
-              :key="item.page"
-              :to="routeFor(item.page)"
-              :class="[
-                'min-h-11 rounded-lg px-3 py-2 text-sm font-medium',
-                currentPage === item.page ? 'bg-teal text-white' : 'text-ink hover:bg-mist',
-              ]"
-              :aria-current="currentPage === item.page ? 'page' : undefined"
+          <label class="block px-2 py-1 lg:hidden">
+            <span class="text-sm font-semibold text-muted">Demo page</span>
+            <select
+              :value="currentPage"
+              class="mt-2 min-h-11 w-full rounded-lg border border-navy/20 bg-white px-3 font-semibold text-navy"
+              @change="changePage"
             >
-              <span class="block text-xs opacity-75">{{ item.group }}</span>
-              {{ item.label }}
-            </RouterLink>
-          </nav>
+              <option v-for="item in visibleNav" :key="item.page" :value="item.page">
+                {{ item.group }} · {{ item.label }}
+              </option>
+            </select>
+          </label>
+          <div class="hidden lg:block">
+            <p class="px-3 py-2 text-sm font-semibold text-muted">Demo navigation</p>
+            <nav class="grid gap-1" aria-label="MVP demo">
+              <RouterLink
+                v-for="item in visibleNav"
+                :key="item.page"
+                :to="routeFor(item.page)"
+                :class="[
+                  'min-h-11 rounded-lg px-3 py-2 text-sm font-medium',
+                  currentPage === item.page ? 'bg-teal text-white' : 'text-ink hover:bg-mist',
+                ]"
+                :aria-current="currentPage === item.page ? 'page' : undefined"
+              >
+                <span class="block text-xs opacity-75">{{ item.group }}</span>
+                {{ item.label }}
+              </RouterLink>
+            </nav>
+          </div>
         </aside>
 
         <section class="min-w-0">

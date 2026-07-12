@@ -40,7 +40,11 @@ const capabilities = [
 <template>
   <section id="capabilities" class="relative overflow-hidden bg-white py-24 sm:py-32">
     <!-- Top gradient fade from dark section -->
-    <div class="pointer-events-none absolute inset-x-0 top-0 h-32" style="background: linear-gradient(to bottom, #f0faf8, white)" aria-hidden="true"></div>
+    <div
+      class="pointer-events-none absolute inset-x-0 top-0 h-32"
+      style="background: linear-gradient(to bottom, #f0faf8, white)"
+      aria-hidden="true"
+    ></div>
 
     <PageContainer class="relative">
       <div class="text-center">
@@ -49,8 +53,8 @@ const capabilities = [
           From evidence to the next decision.
         </h2>
         <p class="mx-auto mt-5 max-w-[65ch] text-base leading-7 text-[#64748b]">
-          Ecodoo keeps measurement, management, and reporting connected without creating a
-          parallel system outside Odoo.
+          Ecodoo keeps measurement, management, and reporting connected without creating a parallel
+          system outside Odoo.
         </p>
       </div>
 
@@ -75,17 +79,32 @@ const capabilities = [
           <p class="mt-3 text-sm leading-6 text-[#64748b]">{{ cap.desc }}</p>
 
           <!-- Arrow on hover -->
-          <div class="mt-5 flex items-center gap-1.5 text-sm font-semibold opacity-0 transition-opacity duration-300 group-hover:opacity-100" :class="cap.iconColor">
+          <div
+            class="mt-5 flex items-center gap-1.5 text-sm font-semibold opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            :class="cap.iconColor"
+          >
             Learn more
-            <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg
+              class="h-4 w-4 transition-transform group-hover:translate-x-1"
+              viewBox="0 0 16 16"
+              fill="none"
+            >
+              <path
+                d="M3 8h10M9 4l4 4-4 4"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </div>
         </article>
       </div>
 
       <!-- Bottom CTA prompt -->
-      <div class="mt-12 rounded-2xl border border-teal/20 bg-gradient-to-r from-teal/5 to-teal/10 p-8 text-center">
+      <div
+        class="mt-12 rounded-2xl border border-teal/20 bg-gradient-to-r from-teal/5 to-teal/10 p-8 text-center"
+      >
         <p class="text-sm font-medium text-[#64748b]">Ready to see how it all works in context?</p>
         <a
           href="/demo"
@@ -93,7 +112,13 @@ const capabilities = [
         >
           Open the interactive demo
           <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path
+              d="M3 8h10M9 4l4 4-4 4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </a>
       </div>

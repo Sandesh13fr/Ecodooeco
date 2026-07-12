@@ -1,6 +1,6 @@
 import { afterEach, describe, it, expect, vi } from 'vitest'
 
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import App from '../App.vue'
 import router from '../router'
 import HeroSection from '../components/sections/HeroSection.vue'
@@ -62,6 +62,11 @@ describe('App', () => {
     expect(wrapper.text()).toContain('GreenRoute Logistics Pvt Ltd')
     expect(wrapper.text()).toContain('Demonstration management score')
     expect(wrapper.find('a[href="/app/transactions?role=manager"]').exists()).toBe(true)
+    expect(wrapper.get('select').element.value).toBe('command-center')
+
+    await wrapper.get('select').setValue('transactions')
+    await flushPromises()
+    expect(router.currentRoute.value.path).toBe('/app/transactions')
 
     await router.push('/app/summary?role=executive')
     await router.isReady()
