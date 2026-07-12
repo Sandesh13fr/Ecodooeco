@@ -12,7 +12,13 @@ import FinalCTASection from '../components/sections/FinalCTASection.vue'
 <template>
   <SiteNavbar />
   <main>
-    <HeroSection /><PlatformOverviewSection /><ESGPillarsSection /><TraceabilityFlowSection /><CapabilitiesSection /><TrustSection /><FinalCTASection />
+    <HeroSection />
+    <PlatformOverviewSection />
+    <ESGPillarsSection />
+    <TraceabilityFlowSection />
+    <CapabilitiesSection />
+    <TrustSection />
+    <FinalCTASection />
   </main>
   <SiteFooter />
 </template>
