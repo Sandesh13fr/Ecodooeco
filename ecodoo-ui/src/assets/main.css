@@ -101,24 +101,20 @@
 
   /* ─── Glow Effects ─── */
   .teal-glow {
-    box-shadow: 0 0 40px rgba(0, 201, 177, 0.2), 0 0 80px rgba(0, 201, 177, 0.08);
+    box-shadow:
+      0 0 40px rgba(0, 201, 177, 0.2),
+      0 0 80px rgba(0, 201, 177, 0.08);
   }
   .teal-text-glow {
     text-shadow: 0 0 30px rgba(0, 201, 177, 0.4);
   }
 
   /* ─── Gradient Text ─── */
-  .gradient-text {
-    background: linear-gradient(135deg, #00c9b1 0%, #7adce5 50%, #ffffff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .accent-text {
+    color: var(--color-teal-light);
   }
-  .gradient-text-warm {
-    background: linear-gradient(135deg, #f59e0b 0%, #00c9b1 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .accent-text-warm {
+    color: var(--color-gold);
   }
 
   /* ─── Pill Badge ─── */
@@ -147,11 +143,16 @@
 
   /* ─── Card Hover ─── */
   .card-hover {
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease,
+      border-color 0.3s ease;
   }
   .card-hover:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 201, 177, 0.1);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.3),
+      0 0 30px rgba(0, 201, 177, 0.1);
   }
 
   /* ─── Scroll Indicator ─── */
@@ -165,7 +166,7 @@
   .scroll-indicator__line {
     width: 1px;
     height: 60px;
-    background: linear-gradient(to bottom, rgba(0,201,177,0.8), transparent);
+    background: linear-gradient(to bottom, rgba(0, 201, 177, 0.8), transparent);
     animation: grow-line 2s ease-in-out infinite;
   }
 
@@ -186,44 +187,91 @@
 
 /* ─── Keyframes ─── */
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.8); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 @keyframes grow-line {
-  0% { transform: scaleY(0); transform-origin: top; opacity: 0; }
-  50% { transform: scaleY(1); opacity: 1; }
-  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+    opacity: 0;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+    opacity: 0;
+  }
 }
 
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slide-in-left {
-  from { opacity: 0; transform: translateX(-32px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes border-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-fade-up {
@@ -252,5 +300,18 @@
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-page {
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+  body {
+    background: white !important;
   }
 }

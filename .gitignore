@@ -20,3 +20,4 @@ ecodoo-ui/vite.*.log
 .codex
 .github
 node_modules
+prompt.json

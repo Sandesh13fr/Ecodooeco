@@ -12,10 +12,9 @@ describe('App', () => {
     await router.push('/')
     await router.isReady()
     const wrapper = mount(App, { global: { plugins: [router] } })
-    expect(wrapper.get('h1').text()).toContain(
-      'Operational activity becomes traceable ESG evidence',
-    )
+    expect(wrapper.get('h1').text()).toContain('Every operation')
     expect(wrapper.find('a[href="#traceability"]').exists()).toBe(true)
+    expect(wrapper.find('a[href="/app"]').exists()).toBe(true)
     const video = wrapper.get('video')
     expect(video.attributes('autoplay')).toBeDefined()
     expect((video.element as HTMLVideoElement).muted).toBe(true)
@@ -40,10 +39,8 @@ describe('App', () => {
   it('uses the local hero video by default', () => {
     const wrapper = mount(HeroSection)
     expect(wrapper.get('source').attributes('src')).toBe('/hero-vedio.mp4')
-    expect(wrapper.get('h1').text()).toContain(
-      'Operational activity becomes traceable ESG evidence',
-    )
-    expect(wrapper.find('a[href="/demo"]').exists()).toBe(true)
+    expect(wrapper.get('h1').text()).toContain('Every operation')
+    expect(wrapper.find('a[href="/app"]').exists()).toBe(true)
   })
 
   it('uses the static hero surface when reduced motion is preferred', () => {
@@ -55,5 +52,21 @@ describe('App', () => {
     const wrapper = mount(HeroSection)
     expect(wrapper.find('video').exists()).toBe(false)
     expect(wrapper.find('img[src="/hero-poster.webp"]').exists()).toBe(true)
+  })
+
+  it('renders the MVP command center and summary routes', async () => {
+    await router.push('/app')
+    await router.isReady()
+    const wrapper = mount(App, { global: { plugins: [router] } })
+    expect(wrapper.get('h1').text()).toContain('Command Center')
+    expect(wrapper.text()).toContain('GreenRoute Logistics Pvt Ltd')
+    expect(wrapper.text()).toContain('Demonstration management score')
+    expect(wrapper.find('a[href="/app/transactions?role=manager"]').exists()).toBe(true)
+
+    await router.push('/app/summary?role=executive')
+    await router.isReady()
+    expect(wrapper.text()).toContain('One-page ESG Summary')
+    expect(wrapper.text()).toContain('120.000 L x 2.680000 kg CO2e/L = 321.600 kg CO2e')
+    expect(wrapper.text()).toContain('not independent assurance')
   })
 })
